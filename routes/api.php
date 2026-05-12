@@ -4,8 +4,8 @@ use Illuminate\Support\Facades\Route;
 
 use App\Http\Controllers\Api\NewsController;
 use App\Http\Controllers\Api\NewsCategoryController;
-
-
+use App\Http\Controllers\KnowledgeBaseController;
+use App\Http\Controllers\CommunityController;
 
 Route::prefix('v1')->group(function () {
 
@@ -21,6 +21,27 @@ Route::prefix('v1')->group(function () {
         Route::delete('{id}', [NewsController::class, 'destroy']);
         Route::get('category/{id}', [NewsController::class, 'byCategory']);
         Route::get('search/{query}', [NewsController::class, 'search']);
+
+    });
+    Route::prefix('knowledge-bases')->group(function () {
+
+        Route::get('/', [KnowledgeBaseController::class, 'index']);        
+        Route::post('/', [KnowledgeBaseController::class, 'store']);       
+        Route::get('/{id}', [KnowledgeBaseController::class, 'show']);     
+        Route::put('/{id}', [KnowledgeBaseController::class, 'update']);   
+        Route::delete('/{id}', [KnowledgeBaseController::class, 'destroy']); 
+
     });
 
+    
+
+    Route::prefix('communities')->group(function () {
+
+        Route::get('/', [CommunityController::class, 'index']);
+        Route::post('/', [CommunityController::class, 'store']);
+        Route::get('/{id}', [CommunityController::class, 'show']);
+        Route::put('/{id}', [CommunityController::class, 'update']);
+        Route::delete('/{id}', [CommunityController::class, 'destroy']);
+
+    });
 });
