@@ -48,7 +48,7 @@ Route::prefix('v1')->group(function () {
         Route::delete('/{id}', [CommunityController::class, 'destroy']);
 
     });
-});
+
 
 
     // ── Public ────────────────────────────────────────────────────────────────
