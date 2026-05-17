@@ -16,8 +16,8 @@ class Community extends Model
     ];
 
     // Relationship (optional but good)
-    public function user()
+    public function student()
     {
-        return $this->belongsTo(User::class);
+        return $this->belongsTo(Student::class, 'user_id');
     }
 }

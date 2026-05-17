@@ -36,7 +36,7 @@ class AuthController extends Controller
             'phone'      => $validated['phone'] ?? null,
         ]);
 
-        $token = $student->createToken('smartunimate')->plainTextToken;
+        $token = $student->createToken('smartunimate', ['role:student'])->plainTextToken;
 
         return response()->json([
             'message' => 'Registration successful',
@@ -66,7 +66,7 @@ class AuthController extends Controller
 
         // Revoke old tokens and issue a fresh one
         $student->tokens()->delete();
-        $token = $student->createToken('smartunimate')->plainTextToken;
+        $token = $student->createToken('smartunimate', ['role:student'])->plainTextToken;
 
         return response()->json([
             'message' => 'Login successful',
@@ -84,5 +84,37 @@ class AuthController extends Controller
         $request->user()->currentAccessToken()->delete();
 
         return response()->json(['message' => 'Logged out successfully']);
+    }
+
+    /**
+     * Instantly reset password for development/MVP purposes using email + student_id verification.
+     * POST /api/forgot-password
+     */
+    public function forgotPassword(Request $request)
+    {
+        $request->validate([
+            'email'      => 'required|email',
+            'student_id' => 'required|string',
+            'password'   => 'required|string|min:8|confirmed',
+        ]);
+
+        $student = Student::where('email', $request->email)
+            ->where('student_id', $request->student_id)
+            ->first();
+
+        if (! $student) {
+            throw ValidationException::withMessages([
+                'email' => ['We could not find a student matching that email and Student ID combination.'],
+            ]);
+        }
+
+        $student->update([
+            'password' => Hash::make($request->password),
+        ]);
+
+        // Revoke all tokens since the password changed
+        $student->tokens()->delete();
+
+        return response()->json(['message' => 'Password reset successfully. You may now log in.']);
     }
 }

@@ -10,19 +10,21 @@ class CommunityController extends Controller
     // GET all posts
     public function index()
     {
-        return response()->json(Community::latest()->get());
+        return response()->json(Community::with('student')->latest()->get());
     }
 
     // CREATE post
     public function store(Request $request)
     {
         $request->validate([
-            'user_id' => 1,
             'post_content' => 'required|string',
             'description' => 'nullable|string',
         ]);
 
-        $data = Community::create($request->all());
+        $payload = $request->all();
+        $payload['user_id'] = $request->user()->id;
+
+        $data = Community::create($payload);
 
         return response()->json([
             'message' => 'Post created successfully',

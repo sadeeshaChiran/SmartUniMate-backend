@@ -17,15 +17,30 @@ class KnowledgeBaseController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'category' => 'required|string',
-            'title' => 'required|string',
-            'source' => 'nullable|string',
-            'status' => 'nullable|string',
-            'file_path' => 'nullable|string',
-            'url' => 'nullable|url',
+            'category'  => 'required|string',
+            'title'     => 'required|string',
+            'source'    => 'nullable|string',
+            'status'    => 'nullable|string',
+            'file'      => 'nullable|file|max:20480',
+            'url'       => 'nullable|string',
         ]);
 
-        $data = KnowledgeBase::create($request->all());
+        $fields = $request->only(['category', 'title', 'source', 'status', 'url']);
+
+        if ($request->hasFile('file')) {
+            $file = $request->file('file');
+            $filename = time() . '_' . preg_replace('/[^a-zA-Z0-9._-]/', '_', $file->getClientOriginalName());
+            
+            $destinationPath = public_path('uploads/kb');
+            if (!file_exists($destinationPath)) {
+                mkdir($destinationPath, 0755, true);
+            }
+            
+            $file->move($destinationPath, $filename);
+            $fields['file_path'] = '/uploads/kb/' . $filename;
+        }
+
+        $data = KnowledgeBase::create($fields);
 
         return response()->json([
             'message' => 'Created successfully',
