@@ -11,6 +11,7 @@ use App\Http\Controllers\KnowledgeBaseController;
 use App\Http\Controllers\CommunityController;
 use App\Http\Controllers\Api\ProfileController;
 use App\Http\Controllers\Api\TimetableController;
+use App\Http\Controllers\Api\AcademicModuleController;
 
 Route::prefix('v1')->group(function () {
 
@@ -37,6 +38,10 @@ Route::prefix('v1')->group(function () {
         Route::get('/', [CommunityController::class, 'index']);
         Route::get('/{id}', [CommunityController::class, 'show']);
     });
+
+    // Public Academic Module Routes
+    Route::get('academic-modules', [AcademicModuleController::class, 'index']);
+    Route::get('academic-modules/{id}', [AcademicModuleController::class, 'show']);
 
 
 
@@ -66,6 +71,11 @@ Route::prefix('v1')->group(function () {
 
         // Admin Moderation - delete community posts
         Route::delete('admin/communities/{id}', [CommunityController::class, 'destroy']);
+
+        // Admin Academic Modules
+        Route::post('academic-modules', [AcademicModuleController::class, 'store']);
+        Route::put('academic-modules/{id}', [AcademicModuleController::class, 'update']);
+        Route::delete('academic-modules/{id}', [AcademicModuleController::class, 'destroy']);
     });
 
     // ── Shared routes (accessible to both student and admin roles) ────────────────

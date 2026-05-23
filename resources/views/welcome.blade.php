@@ -429,6 +429,27 @@
             transform: translateY(-2px);
             box-shadow: 0 4px 8px rgba(0,0,0,0.05);
         }
+        .grid-4 {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 16px;
+        }
+        @media (max-width: 768px) {
+            .grid-4 {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            .grid-3 {
+                grid-template-columns: 1fr;
+            }
+            .grid-2 {
+                grid-template-columns: 1fr;
+            }
+        }
+        @keyframes pulse {
+            0% { box-shadow: 0 0 0 0 rgba(46, 204, 113, 0.4); }
+            70% { box-shadow: 0 0 0 8px rgba(46, 204, 113, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(46, 204, 113, 0); }
+        }
     </style>
 </head>
 <body>
@@ -479,30 +500,161 @@
 
 <!-- HOME -->
 <div class="section active" id="home">
-    <div class="hero">
-        <h1>Your Digital Campus</h1>
-        <p>AI-powered assistant for Sabaragamuwa University students. Get instant answers, manage your schedule, and connect with peers.</p>
-        <div class="quick-search">
-            <input type="text" placeholder="Search modules, faculty, events..." id="heroSearch" onkeydown="if(event.key==='Enter'){nav('academic');document.getElementById('academicSearch').value=this.value;doSearch();}">
-            <button class="btn btn-primary" onclick="nav('academic');document.getElementById('academicSearch').value=document.getElementById('heroSearch').value;doSearch();">Search</button>
+    <!-- STUDENT HOME VIEW -->
+    <div id="student-home-view">
+        <div class="hero">
+            <h1>Your Digital Campus</h1>
+            <p>AI-powered assistant for Sabaragamuwa University students. Get instant answers, manage your schedule, and connect with peers.</p>
+            <div class="quick-search">
+                <input type="text" placeholder="Search modules, faculty, events..." id="heroSearch" onkeydown="if(event.key==='Enter'){nav('academic');document.getElementById('academicSearch').value=this.value;doSearch();}">
+                <button class="btn btn-primary" onclick="nav('academic');document.getElementById('academicSearch').value=document.getElementById('heroSearch').value;doSearch();">Search</button>
+            </div>
+        </div>
+        <div class="grid-3">
+            <div class="stat-card">
+                <div class="stat-num" id="homeEnrolledModules">0</div>
+                <div class="stat-label">Enrolled Modules</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-num" id="homeGPA">0.00</div>
+                <div class="stat-label">Current GPA</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-num" id="homeClassesThisWeek">0</div>
+                <div class="stat-label">Classes This Week</div>
+            </div>
+        </div>
+        <div style="margin-top:20px;" id="homeAlertsContainer">
+            <!-- Dynamic alert card will be populated here -->
         </div>
     </div>
-    <div class="grid-3">
-        <div class="stat-card">
-            <div class="stat-num" id="homeEnrolledModules">0</div>
-            <div class="stat-label">Enrolled Modules</div>
+
+    <!-- ADMIN HOME VIEW -->
+    <div id="admin-home-view" style="display:none;">
+        <div class="hero" style="background: linear-gradient(135deg, #2c3e50, #800000); color: #fff; text-align: left; padding: 40px 32px; border: none; box-shadow: 0 4px 20px rgba(0,0,0,0.15); margin-bottom: 24px;">
+            <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 20px;">
+                <div>
+                    <span style="background:rgba(255,255,255,0.15); font-size:11px; font-weight:700; padding:4px 12px; border-radius:20px; letter-spacing:1px; text-transform:uppercase;">Admin Portal</span>
+                    <h1 style="color:#fff; font-size:32px; margin-top:8px; margin-bottom:4px; font-family:'Playfair Display', serif;" id="adminHomeWelcomeName">Welcome, Administrator</h1>
+                    <p style="color:rgba(255,255,255,0.85); font-size:14px; max-width:100%; margin:0;">Manage the campus database, add syllabus modules, review posts, and broadcast announcements.</p>
+                </div>
+                <div style="background:rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2); padding: 12px 20px; border-radius: 12px; backdrop-filter: blur(8px);">
+                    <div style="font-size:11px; text-transform:uppercase; letter-spacing:1px; color:rgba(255,255,255,0.6);">System Status</div>
+                    <div style="font-weight:600; font-size:14px; margin-top:4px; display:flex; align-items:center; gap:6px;">
+                        <span style="width:10px; height:10px; background:#2ecc71; border-radius:50%; display:inline-block; animation: pulse 2s infinite;"></span>
+                        Services Active
+                    </div>
+                </div>
+            </div>
         </div>
-        <div class="stat-card">
-            <div class="stat-num" id="homeGPA">0.00</div>
-            <div class="stat-label">Current GPA</div>
+
+        <!-- Admin Quick Stats -->
+        <div class="grid-4" style="margin-bottom: 24px;">
+            <div class="stat-card" style="cursor:pointer;" onclick="nav('admin'); switchAdminTab('modules');">
+                <div class="stat-num" id="adminHomeTotalModules" style="color: var(--primary);">0</div>
+                <div class="stat-label" style="font-weight:600;"><i class="fa-solid fa-book-open"></i> Syllabus Modules</div>
+            </div>
+            <div class="stat-card" style="cursor:pointer;" onclick="nav('admin'); switchAdminTab('dashboard');">
+                <div class="stat-num" id="adminHomeTotalPosts" style="color: var(--secondary);">0</div>
+                <div class="stat-label" style="font-weight:600;"><i class="fa-solid fa-users"></i> Community Posts</div>
+            </div>
+            <div class="stat-card" style="cursor:pointer;" onclick="nav('admin'); switchAdminTab('dashboard');">
+                <div class="stat-num" id="adminHomeTotalNews" style="color: var(--success);">0</div>
+                <div class="stat-label" style="font-weight:600;"><i class="fa-solid fa-newspaper"></i> Campus News</div>
+            </div>
+            <div class="stat-card" style="cursor:pointer;" onclick="nav('admin'); switchAdminTab('dashboard');">
+                <div class="stat-num" id="adminHomeTotalKB" style="color: #7b2cbf;">0</div>
+                <div class="stat-label" style="font-weight:600;"><i class="fa-solid fa-book"></i> KB Resources</div>
+            </div>
         </div>
-        <div class="stat-card">
-            <div class="stat-num" id="homeClassesThisWeek">0</div>
-            <div class="stat-label">Classes This Week</div>
+
+        <div class="grid-2">
+            <!-- Left Side: Quick Academic Module Cataloger -->
+            <div class="card">
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px; border-bottom:1px solid var(--border); padding-bottom:10px;">
+                    <h3 class="section-title" style="margin:0; display:flex; align-items:center; gap:8px; color:var(--primary); font-size:16px;">
+                        <i class="fa-solid fa-folder-plus"></i> Quick Module Cataloger
+                    </h3>
+                    <span style="font-size:11px; color:var(--text-muted);">Syllabus Entry Form</span>
+                </div>
+                <div class="grid-2">
+                    <div class="form-group">
+                        <label>Module Code *</label>
+                        <input type="text" id="adminHomeModCode" placeholder="e.g. IS 4110">
+                    </div>
+                    <div class="form-group">
+                        <label>Module Name *</label>
+                        <input type="text" id="adminHomeModName" placeholder="e.g. Advanced Web Development">
+                    </div>
+                </div>
+                <div class="grid-2">
+                    <div class="form-group">
+                        <label>Credits *</label>
+                        <input type="number" id="adminHomeModCredits" placeholder="e.g. 3">
+                    </div>
+                    <div class="form-group">
+                        <label>Faculty</label>
+                        <input type="text" id="adminHomeModFaculty" placeholder="e.g. Computing">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Prerequisite</label>
+                    <input type="text" id="adminHomeModPrereq" placeholder="e.g. IS 3110 (Optional)">
+                </div>
+                <div class="form-group">
+                    <label>Description</label>
+                    <textarea id="adminHomeModDesc" rows="2" placeholder="Course description, goals, and learning outcomes..."></textarea>
+                </div>
+                <button class="btn btn-primary" style="background:var(--danger); border-color:var(--danger); width:100%; display:flex; align-items:center; justify-content:center; gap:8px;" onclick="submitAdminModuleHome()">
+                    <i class="fa-solid fa-plus"></i> Catalog Module & Update Database
+                </button>
+            </div>
+
+            <!-- Right Side: Quick Broadcast & Moderation Queue -->
+            <div style="display:flex; flex-direction:column; gap:20px;">
+                <!-- Quick Broadcast / News announcement -->
+                <div class="card">
+                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px; border-bottom:1px solid var(--border); padding-bottom:10px;">
+                        <h3 class="section-title" style="margin:0; display:flex; align-items:center; gap:8px; color:var(--secondary); font-size:16px;">
+                            <i class="fa-solid fa-bullhorn"></i> Campus Announcement
+                        </h3>
+                        <span style="font-size:11px; color:var(--text-muted);">Quick Broadcast</span>
+                    </div>
+                    <div class="form-group">
+                        <label>Announcement Title</label>
+                        <input type="text" id="adminHomeNewsTitle" placeholder="e.g. Exam Schedule Released for Year 4">
+                    </div>
+                    <div class="form-group">
+                        <label>Category</label>
+                        <select id="adminHomeNewsCat">
+                            <option value="1">Academic Updates</option>
+                            <option value="2">Campus Events</option>
+                            <option value="3">General Announcements</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Announcement Message</label>
+                        <textarea id="adminHomeNewsContent" rows="2" placeholder="Write full announcement details here..."></textarea>
+                    </div>
+                    <button class="btn btn-primary" style="background:var(--primary); border-color:var(--primary); width:100%; display:flex; align-items:center; justify-content:center; gap:8px;" onclick="submitAdminNewsHome()">
+                        <i class="fa-solid fa-paper-plane"></i> Publish to Campus Bulletin
+                    </button>
+                </div>
+
+                <!-- Moderation Feed Widget -->
+                <div class="card" style="margin-bottom:0;">
+                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px; border-bottom:1px solid var(--border); padding-bottom:10px;">
+                        <h3 class="section-title" style="margin:0; display:flex; align-items:center; gap:8px; color:var(--danger); font-size:16px;">
+                            <i class="fa-solid fa-shield-halved"></i> Community Moderation
+                        </h3>
+                        <span style="font-size:11px; color:var(--text-muted);" id="adminHomeModQueueCount">0 items pending</span>
+                    </div>
+                    <div id="adminHomeModList" style="display:flex; flex-direction:column; gap:10px; max-height:220px; overflow-y:auto; padding-right:4px;">
+                        <!-- Populate dynamically with recent posts -->
+                    </div>
+                </div>
+            </div>
         </div>
-    </div>
-    <div style="margin-top:20px;" id="homeAlertsContainer">
-        <!-- Dynamic alert card will be populated here -->
     </div>
 </div>
 
@@ -702,6 +854,7 @@
     </div>
     <div style="display:flex;gap:12px;margin-bottom:24px;overflow-x:auto;padding-bottom:4px;" id="adminSubNav">
         <button class="btn btn-primary" onclick="switchAdminTab('dashboard')" style="border-radius:20px;padding:6px 16px;font-size:13px;background:var(--danger);border-color:var(--danger);" data-tab="dashboard"><i class="fa-solid fa-chart-line"></i> Dashboard</button>
+        <button class="btn btn-outline" onclick="switchAdminTab('modules')" style="border-radius:20px;padding:6px 16px;font-size:13px;" data-tab="modules"><i class="fa-solid fa-book-open"></i> Syllabus Catalog</button>
         <button class="btn btn-outline" onclick="switchAdminTab('profile')" style="border-radius:20px;padding:6px 16px;font-size:13px;" data-tab="profile"><i class="fa-solid fa-user-shield"></i> Admin Profile</button>
         <button class="btn btn-outline" onclick="switchAdminTab('settings')" style="border-radius:20px;padding:6px 16px;font-size:13px;" data-tab="settings"><i class="fa-solid fa-gear"></i> Settings</button>
     </div>
@@ -757,6 +910,36 @@
                     </div>
                 </div>
                 <button class="btn btn-primary" style="background:var(--danger);width:100%;margin-top:10px;" id="adminKbSubmitBtn" onclick="submitAdminKB()"><i class="fa-solid fa-upload"></i> Upload Resource</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODULES CATALOG -->
+    <div id="adminView-modules" class="admin-view" style="display:none;">
+        <div class="card">
+            <h3 class="section-title">Academic Modules Catalog</h3>
+            <div class="grid-2">
+                <div class="form-group"><label>Module Code *</label><input type="text" id="adminModCode" placeholder="e.g. IS 4110"></div>
+                <div class="form-group"><label>Module Name *</label><input type="text" id="adminModName" placeholder="e.g. Advanced Web Dev"></div>
+            </div>
+            <div class="grid-2">
+                <div class="form-group"><label>Credits *</label><input type="number" id="adminModCredits" placeholder="e.g. 3"></div>
+                <div class="form-group"><label>Faculty</label><input type="text" id="adminModFaculty" placeholder="e.g. Computing"></div>
+            </div>
+            <div class="form-group"><label>Prerequisite</label><input type="text" id="adminModPrereq" placeholder="e.g. IS 3110"></div>
+            <div class="form-group"><label>Description</label><textarea id="adminModDesc" rows="2" placeholder="Course description..."></textarea></div>
+            <button class="btn btn-primary" style="background:var(--danger);width:100%;" onclick="submitAdminModule()"><i class="fa-solid fa-plus"></i> Catalog Module</button>
+        </div>
+        
+        <div class="card" style="margin-top:20px;">
+            <h3 class="section-title">Current Modules (<span id="adminModCount">0</span>)</h3>
+            <div style="overflow-x:auto;">
+                <table>
+                    <thead><tr><th>Code</th><th>Name</th><th>Credits</th><th>Faculty</th><th>Action</th></tr></thead>
+                    <tbody id="adminModTable">
+                        <tr><td colspan="5" style="text-align:center;color:var(--text-muted);">Loading modules...</td></tr>
+                    </tbody>
+                </table>
             </div>
         </div>
     </div>
@@ -1144,14 +1327,7 @@ async function apiFetch(url, options = {}) {
 }
 
 // ── DATA ──
-const MODULES_DB = [
-    { code:'IS 4110', name:'Capstone Project', credits:6, faculty:'Dr. K. Sandaruwan', desc:'Final year individual/group research project.', prereq:'IS 3200' },
-    { code:'IS 4102', name:'Data Mining & ML', credits:3, faculty:'Dr. P. Jayasinghe', desc:'Machine learning algorithms and data mining techniques.', prereq:'IS 3102' },
-    { code:'IS 4104', name:'Cloud Computing', credits:3, faculty:'Mr. R. Fernando', desc:'AWS, Azure, distributed systems and deployment.', prereq:'IS 3010' },
-    { code:'IS 4106', name:'Research Methods', credits:2, faculty:'Dr. H. Wijesinghe', desc:'Research design, ethics, and academic writing.', prereq:'None' },
-    { code:'IS 3200', name:'Software Engineering', credits:3, faculty:'Prof. A. Bandara', desc:'SDLC, Agile, UML, project management.', prereq:'IS 2100' },
-    { code:'IS 3102', name:'Database Systems', credits:3, faculty:'Dr. S. Kumari', desc:'Advanced SQL, NoSQL, and database design.', prereq:'IS 2020' },
-];
+let MODULES_DB = [];
 
 const NOTIFICATIONS = [
     { text:'Capstone proposal deadline in 3 days — IS 4110', time:'Just now', read:false },
@@ -1306,6 +1482,11 @@ function initAuth() {
     document.getElementById('nav-profile').style.display = 'block';
     document.getElementById('nav-gpa').style.display = 'block';
     document.getElementById('nav-timetable').style.display = 'block';
+    
+    // Reset home views
+    document.getElementById('student-home-view').style.display = 'block';
+    document.getElementById('admin-home-view').style.display = 'none';
+    
     updateProfileUI(null);
     timetable = {};
     if(typeof renderTimetable === 'function') renderTimetable();
@@ -1319,8 +1500,19 @@ function initAuth() {
             document.getElementById('nav-gpa').style.display = 'none';
             document.getElementById('nav-timetable').style.display = 'none';
             
+            // Show Admin Home Dashboard
+            document.getElementById('student-home-view').style.display = 'none';
+            document.getElementById('admin-home-view').style.display = 'block';
+            
             const admin = userStr ? JSON.parse(userStr) : null;
             updateAdminProfileUI(admin);
+            if (admin && admin.name) {
+                document.getElementById('adminHomeWelcomeName').textContent = `Welcome, ${admin.name}`;
+            } else {
+                document.getElementById('adminHomeWelcomeName').textContent = `Welcome, Administrator`;
+            }
+            
+            loadAdminHomeData();
             
             // If we are on a student-only tab, redirect to admin
             const currentTab = document.querySelector('.section.active').id;
@@ -1858,10 +2050,14 @@ function doSearch() {
 
 function renderAllModules() {
     const container = document.getElementById('allModules');
+    if (!MODULES_DB || !MODULES_DB.length) {
+        container.innerHTML = '<div class="card"><p style="color:var(--text-muted);">No modules available.</p></div>';
+        return;
+    }
     container.innerHTML = MODULES_DB.map(m => `
         <div class="module-result">
             <h4><strong>${m.code}</strong> — ${m.name} <span class="tag tag-blue">${m.credits} Cr</span></h4>
-            <p style="font-size:12px;">${m.faculty} · Pre-req: ${m.prereq}</p>
+            <p style="font-size:12px;">${m.faculty || 'Unassigned'} · Pre-req: ${m.prereq || 'None'}</p>
         </div>`).join('');
 }
 
@@ -2550,11 +2746,9 @@ function switchAdminTab(tabName) {
 function updateAdminProfileUI(admin) {
     if(admin) {
         document.getElementById('adminNameBig').textContent = admin.name || 'System Administrator';
-        document.getElementById('adminEmailBig').textContent = admin.email || 'admin@smartunimate.com';
-        document.getElementById('adminProfName').value = admin.name || 'System Administrator';
-        document.getElementById('adminProfEmail').value = admin.email || 'admin@smartunimate.com';
-        document.getElementById('adminMemberSince').value = admin.created_at ? new Date(admin.created_at).toLocaleDateString() : '05/17/2026';
-        
+            document.getElementById('adminEmailBig').textContent = admin.email || 'admin@mate.com';
+            document.getElementById('adminProfName').value = admin.name || 'System Administrator';
+            document.getElementById('adminProfEmail').value = admin.email || 'admin@mate.com';
         // Update stats
         document.getElementById('adminStatPosts').textContent = posts.length;
         document.getElementById('adminStatNews').textContent = allNews.length;
@@ -2812,12 +3006,260 @@ async function submitAdminKB() {
     }
 }
 
+async function loadAdminModules() {
+    try {
+        const mods = await apiFetch('/api/v1/academic-modules');
+        
+        // Sync the student-facing DB
+        MODULES_DB = mods;
+        renderAllModules();
+        
+        const countEl = document.getElementById('adminModCount');
+        if(countEl) countEl.innerText = mods.length;
+        
+        const tbody = document.getElementById('adminModTable');
+        if(!tbody) return;
+        
+        if (mods.length === 0) {
+            tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;color:var(--text-muted);">No modules found</td></tr>';
+            return;
+        }
+        
+        tbody.innerHTML = mods.map(m => `
+            <tr>
+                <td style="font-weight:600;color:var(--primary);">${m.code}</td>
+                <td>${m.name}</td>
+                <td>${m.credits}</td>
+                <td>${m.faculty || '-'}</td>
+                <td><button class="btn btn-outline" style="color:var(--danger);border-color:var(--danger);padding:4px 8px;font-size:12px;margin:0;" onclick="deleteAdminModule(${m.id})"><i class="fa-solid fa-trash"></i></button></td>
+            </tr>
+        `).join('');
+    } catch(e) {
+        console.error('Failed to load modules:', e);
+    }
+}
+
+async function submitAdminModule() {
+    const code = document.getElementById('adminModCode').value.trim();
+    const name = document.getElementById('adminModName').value.trim();
+    const credits = document.getElementById('adminModCredits').value;
+    const faculty = document.getElementById('adminModFaculty').value.trim();
+    const prereq = document.getElementById('adminModPrereq').value.trim();
+    const desc = document.getElementById('adminModDesc').value.trim();
+    
+    if(!code || !name || !credits) { addNotif('⚠️ Code, Name, and Credits are required!'); return; }
+    
+    try {
+        await apiFetch('/api/v1/academic-modules', {
+            method: 'POST',
+            body: JSON.stringify({
+                code, name, credits: parseInt(credits), faculty, prereq, desc
+            })
+        });
+        addNotif('Module cataloged successfully!');
+        
+        document.getElementById('adminModCode').value = '';
+        document.getElementById('adminModName').value = '';
+        document.getElementById('adminModCredits').value = '';
+        document.getElementById('adminModFaculty').value = '';
+        document.getElementById('adminModPrereq').value = '';
+        document.getElementById('adminModDesc').value = '';
+        
+        loadAdminModules();
+    } catch(e) {
+        addNotif('⚠️ Failed to add module: ' + e.message);
+    }
+}
+
+async function deleteAdminModule(id) {
+    if(!confirm("Are you sure you want to delete this module?")) return;
+    try {
+        await apiFetch('/api/v1/academic-modules/' + id, { method: 'DELETE' });
+        addNotif('Module deleted.');
+        loadAdminModules();
+    } catch(e) {
+        addNotif('⚠️ Error deleting module: ' + e.message);
+    }
+}
+
+// ── ADMIN HOME DASHBOARD HANDLERS ──
+async function loadAdminHomeData() {
+    const role = localStorage.getItem('susl_role');
+    if (role !== 'admin') return;
+
+    try {
+        // 1. Modules count
+        let mods = MODULES_DB;
+        if (!mods || mods.length === 0) {
+            mods = await apiFetch('/api/v1/academic-modules');
+            MODULES_DB = mods;
+        }
+        document.getElementById('adminHomeTotalModules').textContent = mods.length;
+
+        // 2. Posts count
+        const postsData = await apiFetch('/api/v1/communities');
+        if (postsData) {
+            posts = postsData.map(p => {
+                const imgStore = JSON.parse(localStorage.getItem('susl_post_images') || '{}');
+                return {
+                    id: p.id,
+                    user_id: p.user_id,
+                    author: p.student ? p.student.name : 'Unknown Student',
+                    initials: p.student ? (p.student.name || 'U').split(' ').map(n=>n[0]).join('').substring(0,2).toUpperCase() : 'US',
+                    text: p.post_content,
+                    category: p.description || 'General',
+                    time: new Date(p.created_at).toLocaleDateString(),
+                    likes: 0,
+                    image: imgStore[p.post_content.substring(0,50)] || null
+                };
+            });
+        }
+        document.getElementById('adminHomeTotalPosts').textContent = posts.length;
+
+        // 3. News count
+        if (!allNews || allNews.length === 0) {
+            const newsData = await apiFetch('/api/v1/news');
+            if (newsData) allNews = newsData;
+        }
+        document.getElementById('adminHomeTotalNews').textContent = allNews.length;
+
+        // 4. KB count
+        if (!allKB || allKB.length === 0) {
+            const kbData = await apiFetch('/api/v1/knowledge-bases');
+            if (kbData) allKB = kbData;
+        }
+        document.getElementById('adminHomeTotalKB').textContent = allKB.length;
+
+        // Render Home moderation widget
+        renderHomeModWidget();
+
+    } catch (e) {
+        console.error("Error loading admin homepage statistics:", e);
+    }
+}
+
+function renderHomeModWidget() {
+    const listContainer = document.getElementById('adminHomeModList');
+    const countBadge = document.getElementById('adminHomeModQueueCount');
+    if (!listContainer) return;
+
+    if (!posts.length) {
+        listContainer.innerHTML = '<p style="color:var(--text-muted); font-size:13px; text-align:center; padding: 20px 0;">No active posts to moderate.</p>';
+        countBadge.textContent = '0 items';
+        return;
+    }
+
+    countBadge.textContent = `${posts.length} items`;
+    listContainer.innerHTML = posts.map(p => `
+        <div style="display:flex; justify-content:space-between; align-items:start; gap:12px; padding:10px; background:var(--surface2); border:1px solid var(--border); border-radius:8px; margin-bottom:8px;">
+            <div style="flex:1; min-width:0;">
+                <div style="display:flex; align-items:center; gap:6px; margin-bottom:4px;">
+                    <span style="font-weight:600; font-size:12px; color:var(--text); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; max-width:120px;">${escHtml(p.author)}</span>
+                    <span class="tag tag-blue" style="font-size:9px; padding:2px 6px;">${p.category}</span>
+                </div>
+                <div style="font-size:12px; color:var(--text-muted); line-height:1.4; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden; word-break:break-all;">
+                    ${escHtml(p.text)}
+                </div>
+            </div>
+            <div style="display:flex; gap:4px; flex-shrink:0;">
+                <button class="btn btn-outline" style="color:var(--danger); border-color:var(--danger); padding:4px 8px; font-size:11px; margin:0;" onclick="adminDeletePostHome(${p.id})">
+                    <i class="fa-solid fa-trash"></i> Delete
+                </button>
+            </div>
+        </div>
+    `).join('');
+}
+
+async function adminDeletePostHome(postId) {
+    if(!confirm('Are you sure you want to delete this post?')) return;
+    try {
+        await apiFetch('/api/v1/admin/communities/' + postId, { method: 'DELETE' });
+        addNotif('Post deleted successfully.');
+        posts = posts.filter(p => p.id !== postId);
+        
+        // Synchronize widgets and admin panel view
+        renderHomeModWidget();
+        renderAdminModQueue();
+        
+        document.getElementById('adminHomeTotalPosts').textContent = posts.length;
+    } catch(e) {
+        addNotif('⚠️ Failed to delete post: ' + e.message);
+    }
+}
+
+async function submitAdminModuleHome() {
+    const code = document.getElementById('adminHomeModCode').value.trim();
+    const name = document.getElementById('adminHomeModName').value.trim();
+    const credits = document.getElementById('adminHomeModCredits').value;
+    const faculty = document.getElementById('adminHomeModFaculty').value.trim();
+    const prereq = document.getElementById('adminHomeModPrereq').value.trim();
+    const desc = document.getElementById('adminHomeModDesc').value.trim();
+    
+    if(!code || !name || !credits) { addNotif('⚠️ Code, Name, and Credits are required!'); return; }
+    
+    try {
+        await apiFetch('/api/v1/academic-modules', {
+            method: 'POST',
+            body: JSON.stringify({
+                code, name, credits: parseInt(credits), faculty, prereq, desc
+            })
+        });
+        addNotif('Module cataloged successfully!');
+        
+        // Reset home fields
+        document.getElementById('adminHomeModCode').value = '';
+        document.getElementById('adminHomeModName').value = '';
+        document.getElementById('adminHomeModCredits').value = '';
+        document.getElementById('adminHomeModFaculty').value = '';
+        document.getElementById('adminHomeModPrereq').value = '';
+        document.getElementById('adminHomeModDesc').value = '';
+        
+        // Refresh local module data structures and admin tab lists
+        await loadAdminModules();
+        await loadAdminHomeData();
+    } catch(e) {
+        addNotif('⚠️ Failed to add module: ' + e.message);
+    }
+}
+
+async function submitAdminNewsHome() {
+    const title = document.getElementById('adminHomeNewsTitle').value.trim();
+    const cat = document.getElementById('adminHomeNewsCat').value;
+    const content = document.getElementById('adminHomeNewsContent').value.trim();
+    
+    if(!title || !content) { addNotif('⚠️ Title and Content are required!'); return; }
+    
+    try {
+        await apiFetch('/api/v1/news', {
+            method: 'POST',
+            body: JSON.stringify({
+                title: title,
+                content: content,
+                category_id: parseInt(cat),
+                date: new Date().toISOString().split('T')[0]
+            })
+        });
+        addNotif('News published successfully!');
+        
+        // Reset news fields
+        document.getElementById('adminHomeNewsTitle').value = '';
+        document.getElementById('adminHomeNewsContent').value = '';
+        
+        // Refresh news listings and count
+        await fetchNews();
+        await loadAdminHomeData();
+    } catch(e) {
+        addNotif('⚠️ Failed to publish news: ' + e.message);
+    }
+}
+
 // ── INIT ──
 window.onload = () => {
     initAuth();
     renderNotifications();
     fetchPosts();
     renderGpa();
+    loadAdminModules();
     renderAllModules();
     fetchNews();
     fetchKB();
