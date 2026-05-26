@@ -661,28 +661,74 @@
 <!-- AI CHAT -->
 <div class="section" id="chatbot">
     <h2 class="page-title">AI Chat Assistant</h2>
+
     <div class="chat-wrap">
+
+        <!-- HEADER -->
         <div class="chat-header">
-            <div class="ai-avatar"><i class="fa-solid fa-robot" style="font-size:13px;"></i></div>
+            <div class="ai-avatar">
+                <i class="fa-solid fa-robot" style="font-size:13px;"></i>
+            </div>
+
             <div>
                 <div style="font-size:14px;font-weight:600;">UniMate AI</div>
-                <div style="font-size:11px;color:var(--text-muted);">Powered by · RAG-enhanced</div>
+                <div style="font-size:11px;color:var(--text-muted);">
+                    Powered by Claude · RAG-enhanced
+                </div>
             </div>
-            <button class="btn btn-outline" style="margin-left:auto;font-size:12px;padding:5px 10px;" onclick="clearChat()">Clear</button>
+
+            <button class="btn btn-outline"
+                style="margin-left:auto;font-size:12px;padding:5px 10px;"
+                onclick="clearChat()">
+                Clear
+            </button>
         </div>
-        <div class="chat-messages" id="chatBox">
-            <div class="msg bot">👋 Hello! I'm UniMate, powered by Claude AI and SUSL's knowledge base. Ask me about modules, timetables, faculty contacts, or campus life!</div>
+
+        <!-- MESSAGES -->
+        <div class="chat-messages" id="chatBox"
+            style="height:420px;overflow-y:auto;padding:12px;display:flex;flex-direction:column;gap:10px;">
+
+            <div class="msg bot">
+                👋 Hello! I'm UniMate, powered by Claude AI and SUSL knowledge base.
+                Ask me about modules, timetables, faculty contacts, or campus life!
+            </div>
+
         </div>
-        <div class="chat-input-row">
-            <input type="text" id="chatInput" placeholder="Ask about IS 4110, library hours, exam schedules..." onkeydown="if(event.key==='Enter')sendChat()">
-            <button class="btn btn-primary" onclick="sendChat()"><i class="fa-solid fa-paper-plane"></i></button>
+
+        <!-- INPUT -->
+        <div class="chat-input-row" style="display:flex;gap:8px;padding:10px;border-top:1px solid #eee;">
+
+            <input type="text"
+                id="chatInput"
+                placeholder="Ask about IS 4110, library hours, exam schedules..."
+                style="flex:1;padding:10px;border:1px solid #ddd;border-radius:10px;"
+                onkeydown="if(event.key==='Enter') sendChat()">
+
+            <button class="btn btn-primary" onclick="sendChat()">
+                <i class="fa-solid fa-paper-plane"></i>
+            </button>
         </div>
     </div>
+
+    <!-- QUICK CHIPS -->
     <div style="margin-top:12px;display:flex;gap:8px;flex-wrap:wrap;">
-        <button class="btn btn-outline" style="font-size:12px;" onclick="quickAsk('What modules are in Year 4 IS?')">Year 4 modules</button>
-        <button class="btn btn-outline" style="font-size:12px;" onclick="quickAsk('When is the library open?')">Library hours</button>
-        <button class="btn btn-outline" style="font-size:12px;" onclick="quickAsk('Who is the HOD of IS department?')">IS Department HOD</button>
-        <button class="btn btn-outline" style="font-size:12px;" onclick="quickAsk('What are the capstone project guidelines?')">Capstone guidelines</button>
+
+        <button class="btn btn-outline" onclick="quickAsk('What modules are in Year 4 IS?')">
+            📘 Year 4 modules
+        </button>
+
+        <button class="btn btn-outline" onclick="quickAsk('When is the library open?')">
+            🕘 Library hours
+        </button>
+
+        <button class="btn btn-outline" onclick="quickAsk('Who is the HOD of IS department?')">
+            🏛️ IS Department HOD
+        </button>
+
+        <button class="btn btn-outline" onclick="quickAsk('What are the capstone project guidelines?')">
+            🎓 Capstone guidelines
+        </button>
+
     </div>
 </div>
 
@@ -1993,7 +2039,7 @@ async function sendChat() {
         document.getElementById(tid)?.remove();
         
         if (resp && resp.reply) {
-            box.innerHTML += `<div class="msg bot">${escHtml(resp.reply)}</div>`;
+            box.innerHTML += `<div class="msg bot">${resp.reply}</div>`;
         } else {
             box.innerHTML += `<div class="msg bot">⚠️ Something went wrong.</div>`;
         }

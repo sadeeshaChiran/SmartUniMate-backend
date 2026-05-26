@@ -29,8 +29,8 @@ Route::prefix('v1')->group(function () {
 
     // Public Knowledge Base Routes
     Route::prefix('knowledge-bases')->group(function () {
-        Route::get('/', [KnowledgeBaseController::class, 'index']);        
-        Route::get('/{id}', [KnowledgeBaseController::class, 'show']);     
+        Route::get('/', [KnowledgeBaseController::class, 'index']);
+        Route::get('/{id}', [KnowledgeBaseController::class, 'show']);
     });
 
     // Public Communities
@@ -55,7 +55,7 @@ Route::prefix('v1')->group(function () {
 
     Route::middleware(['auth:sanctum', 'ability:role:admin'])->group(function () {
         Route::post('/admin/logout', [AdminAuthController::class, 'logout']);
-        
+
         // Admin Content Management
         Route::post('news-categories', [NewsCategoryController::class, 'store']);
         Route::put('news-categories/{news_category}', [NewsCategoryController::class, 'update']);
