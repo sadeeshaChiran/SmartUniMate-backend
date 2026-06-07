@@ -29,11 +29,12 @@ class ProfileController extends Controller
         $student = $request->user();
 
         $validated = $request->validate([
-            'name'    => 'sometimes|nullable|string|max:255',
-            'email'   => 'sometimes|nullable|email|max:255',
-            'faculty' => 'sometimes|nullable|string|max:255',
-            'year'    => 'sometimes|nullable|integer|min:1|max:4',
-            'phone'   => 'sometimes|nullable|string|max:20',
+            'name'       => 'sometimes|nullable|string|max:255',
+            'email'      => 'sometimes|nullable|email|max:255|unique:students,email,' . $student->id,
+            'student_id' => 'sometimes|nullable|string|max:50|unique:students,student_id,' . $student->id,
+            'faculty'    => 'sometimes|nullable|string|max:255',
+            'year'       => 'sometimes|nullable|integer|min:1|max:4',
+            'phone'      => 'sometimes|nullable|string|max:20',
         ]);
 
         $student->update($validated);

@@ -13,11 +13,18 @@ class Community extends Model
         'user_id',
         'post_content',
         'description',
+        'is_admin',
+        'image_path',
     ];
 
     // Relationship (optional but good)
     public function student()
     {
         return $this->belongsTo(Student::class, 'user_id');
+    }
+
+    public function admin()
+    {
+        return $this->belongsTo(User::class, 'user_id');
     }
 }

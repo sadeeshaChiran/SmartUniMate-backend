@@ -19,6 +19,9 @@ class Student extends Authenticatable
         'year',
         'phone',
         'avatar',
+        'is_banned',
+        'warnings_count',
+        'warning_message',
     ];
 
     protected $hidden = [

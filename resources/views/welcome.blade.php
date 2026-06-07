@@ -660,9 +660,20 @@
 
 <!-- AI CHAT -->
 <div class="section" id="chatbot">
-    <h2 class="page-title">AI Chat Assistant</h2>
+    <h2 class="page-title">AI Chat Assistant & Student Messenger</h2>
 
-    <div class="chat-wrap">
+    <!-- CHAT TOGGLE TABS -->
+    <div style="display:flex;gap:8px;margin-bottom:16px;">
+        <button id="btnAiChatTab" class="btn btn-primary" onclick="switchChatTab('ai')" style="font-size:12px;padding:6px 16px;border-radius:20px;margin:0;">
+            <i class="fa-solid fa-robot"></i> UniMate AI
+        </button>
+        <button id="btnPeerChatTab" class="btn btn-outline" onclick="switchChatTab('peer')" style="font-size:12px;padding:6px 16px;border-radius:20px;margin:0;">
+            <i class="fa-solid fa-comments"></i> Student Chat
+        </button>
+    </div>
+
+    <!-- AI CHAT WRAPPER -->
+    <div id="aiChatWrap" class="chat-wrap">
 
         <!-- HEADER -->
         <div class="chat-header">
@@ -707,6 +718,86 @@
             <button class="btn btn-primary" onclick="sendChat()">
                 <i class="fa-solid fa-paper-plane"></i>
             </button>
+        </div>
+    </div>
+
+    <!-- PEER CHAT WRAPPER -->
+    <div id="peerChatWrap" class="chat-wrap" style="display:none; flex-direction:row; height:500px; border:1px solid var(--border); border-radius:12px; overflow:hidden;">
+        <!-- Left Sidebar: Search & Active Contacts -->
+        <div style="width:280px; border-right:1px solid var(--border); display:flex; flex-direction:column; background:rgba(0,0,0,0.015); height:100%;">
+            <!-- Search -->
+            <div style="padding:12px; border-bottom:1px solid var(--border); position:relative;">
+                <div style="position:relative; display:flex; align-items:center;">
+                    <i class="fa-solid fa-magnifying-glass" style="position:absolute; left:12px; color:var(--text-muted); font-size:12px;"></i>
+                    <input type="text" id="peerSearchInput" placeholder="Search Index or Name..." 
+                           style="width:100%; padding:8px 8px 8px 32px; font-size:12px; border:1px solid var(--border); border-radius:10px; margin:0;"
+                           oninput="doPeerSearch()">
+                </div>
+                <!-- Dropdown overlay -->
+                <div id="peerSearchResults" style="display:none; position:absolute; left:12px; right:12px; top:54px; background:var(--card-bg); border:1px solid var(--border); border-radius:10px; box-shadow:0 4px 16px rgba(0,0,0,0.08); z-index:100; max-h:200px; overflow-y:auto;">
+                </div>
+            </div>
+            <!-- Contact List -->
+            <div style="flex:1; overflow-y:auto; padding:8px; display:flex; flex-direction:column; gap:6px;">
+                <div style="font-size:10px; color:var(--text-muted); font-weight:700; text-transform:uppercase; tracking-wider; padding:4px 8px; margin-bottom:4px;">Conversations</div>
+                <div id="peerThreadsContainer" style="display:flex; flex-direction:column; gap:4px;">
+                    <p style="font-size:11px; color:var(--text-muted); text-align:center; padding:20px 0;">No active chats.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Right Side: Chat Box -->
+        <div style="flex:1; display:flex; flex-direction:column; height:100%; background:#fcfbf9; position:relative;">
+            <!-- Empty State -->
+            <div id="peerChatEmptyState" style="flex:1; display:flex; flex-direction:column; align-items:center; justify-content:center; padding:30px; text-align:center; color:var(--text-muted);">
+                <div style="width:48px; height:48px; border-radius:50%; background:rgba(0,0,0,0.03); display:flex; align-items:center; justify-content:center; margin-bottom:12px; border:1px solid var(--border);">
+                    <i class="fa-regular fa-comments" style="font-size:20px; color:var(--text-muted);"></i>
+                </div>
+                <h4 style="font-size:14px; font-weight:700; margin:0 0 4px 0; color:var(--text);">Select a Student</h4>
+                <p style="font-size:11px; max-width:240px; margin:4px 0 0 0; line-height:1.4;">Search by Index Number (e.g. 22FIS0580) or Name on the left to start a conversation.</p>
+            </div>
+
+            <!-- Active Chat Frame -->
+            <div id="peerChatActiveFrame" style="display:none; flex-direction:column; height:100%; width:100%;">
+                <!-- Header -->
+                <div style="padding:10px 16px; border-bottom:1px solid var(--border); background:var(--card-bg); display:flex; align-items:center; justify-content:space-between; flex-shrink:0;">
+                    <div style="display:flex; align-items:center; gap:10px;">
+                        <div id="peerActiveAvatar" style="width:34px; height:34px; border-radius:50%; background:rgba(128,0,0,0.1); color:#800000; font-weight:700; display:flex; align-items:center; justify-content:center; font-size:12px; border:1px solid var(--border);"></div>
+                        <div style="text-align:left;">
+                            <div id="peerActiveName" style="font-size:13px; font-weight:700; color:var(--text); line-height:1.2;"></div>
+                            <div id="peerActiveId" style="font-size:10px; color:var(--text-muted);"></div>
+                        </div>
+                    </div>
+                    <button class="btn btn-outline" style="border-color:var(--danger); color:var(--danger); font-size:11px; padding:4px 8px; margin:0;" onclick="openReportPeerModal()">
+                        <i class="fa-solid fa-triangle-exclamation"></i> Report
+                    </button>
+                </div>
+
+                <!-- Messages area -->
+                <div id="peerChatMessagesBox" style="flex:1; overflow-y:auto; padding:16px; display:flex; flex-direction:column; gap:12px; background:#fafaf9;">
+                </div>
+
+                <!-- Attachment Chip -->
+                <div id="peerFilePreviewChip" style="display:none; justify-content:space-between; align-items:center; padding:8px 16px; background:rgba(0,0,0,0.04); border-top:1px solid var(--border); font-size:11px; flex-shrink:0;">
+                    <div style="display:flex; align-items:center; gap:6px; color:var(--text); font-weight:600; min-width:0;">
+                        <i class="fa-solid fa-paperclip" style="color:#800000;"></i>
+                        <span id="peerFilePreviewName" style="text-overflow:ellipsis; overflow:hidden; white-space:nowrap; max-width:260px;"></span>
+                    </div>
+                    <button onclick="clearSelectedPeerFile()" style="background:none; border:none; color:var(--danger); cursor:pointer; padding:2px;"><i class="fa-solid fa-xmark"></i></button>
+                </div>
+
+                <!-- Input Row -->
+                <div style="padding:10px 16px; border-top:1px solid var(--border); background:var(--card-bg); display:flex; gap:10px; align-items:center; flex-shrink:0;">
+                    <input type="file" id="peerFileInput" style="display:none;" onchange="handlePeerFileSelect()">
+                    <button class="btn btn-outline" style="padding:10px; min-width:unset; margin:0; border-radius:10px;" onclick="document.getElementById('peerFileInput').click()">
+                        <i class="fa-solid fa-paperclip" style="font-size:14px; color:var(--text-muted);"></i>
+                    </button>
+                    <input type="text" id="peerMessageInput" placeholder="Type a message..." style="flex:1; padding:10px 14px; border:1px solid var(--border); border-radius:10px; margin:0; font-size:12px;" onkeydown="if(event.key==='Enter') sendPeerMessage()">
+                    <button class="btn btn-primary" id="peerSendBtn" onclick="sendPeerMessage()" style="padding:10px 14px; min-width:unset; margin:0; border-radius:10px;">
+                        <i class="fa-solid fa-paper-plane"></i>
+                    </button>
+                </div>
+            </div>
         </div>
     </div>
 
@@ -870,6 +961,7 @@
         </div>
         <div style="display:flex;gap:8px;margin-top:8px;align-items:center;">
             <select id="postCategory" style="width:auto;margin:0;font-size:13px;">
+                <option>Boarding & Accommodation</option>
                 <option>Academic Help</option>
                 <option>Campus Life</option>
                 <option>Announcements</option>
@@ -881,10 +973,13 @@
         </div>
     </div>
     <div class="card">
-        <div style="display:flex;gap:8px;margin-bottom:16px;">
+        <div style="display:flex;gap:8px;margin-bottom:16px;flex-wrap:wrap;">
             <button class="btn btn-outline" style="font-size:12px;" onclick="filterPosts('All')">All</button>
+            <button class="btn btn-outline" style="font-size:12px;" onclick="filterPosts('Boarding & Accommodation')">Boarding & Accommodation</button>
             <button class="btn btn-outline" style="font-size:12px;" onclick="filterPosts('Academic Help')">Academic Help</button>
             <button class="btn btn-outline" style="font-size:12px;" onclick="filterPosts('Campus Life')">Campus Life</button>
+            <button class="btn btn-outline" style="font-size:12px;" onclick="filterPosts('Announcements')">Announcements</button>
+            <button class="btn btn-outline" style="font-size:12px;" onclick="filterPosts('General')">General</button>
         </div>
         <div id="feedContainer"></div>
     </div>
@@ -901,6 +996,7 @@
     <div style="display:flex;gap:12px;margin-bottom:24px;overflow-x:auto;padding-bottom:4px;" id="adminSubNav">
         <button class="btn btn-primary" onclick="switchAdminTab('dashboard')" style="border-radius:20px;padding:6px 16px;font-size:13px;background:var(--danger);border-color:var(--danger);" data-tab="dashboard"><i class="fa-solid fa-chart-line"></i> Dashboard</button>
         <button class="btn btn-outline" onclick="switchAdminTab('modules')" style="border-radius:20px;padding:6px 16px;font-size:13px;" data-tab="modules"><i class="fa-solid fa-book-open"></i> Syllabus Catalog</button>
+        <button class="btn btn-outline" onclick="switchAdminTab('reports')" style="border-radius:20px;padding:6px 16px;font-size:13px;" data-tab="reports"><i class="fa-solid fa-triangle-exclamation"></i> Complaints</button>
         <button class="btn btn-outline" onclick="switchAdminTab('profile')" style="border-radius:20px;padding:6px 16px;font-size:13px;" data-tab="profile"><i class="fa-solid fa-user-shield"></i> Admin Profile</button>
         <button class="btn btn-outline" onclick="switchAdminTab('settings')" style="border-radius:20px;padding:6px 16px;font-size:13px;" data-tab="settings"><i class="fa-solid fa-gear"></i> Settings</button>
     </div>
@@ -1070,6 +1166,31 @@
                     <div class="palette-swatch" style="background:linear-gradient(135deg,#e76f51,#f4a261);" onclick="setPalette('palette-sunset')" title="Sunset Orange"></div>
                     <div class="palette-swatch" style="background:linear-gradient(135deg,#7b2cbf,#9d4edd);" onclick="setPalette('palette-purple')" title="Royal Purple"></div>
                 </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- REPORTS/COMPLAINTS VIEW -->
+    <div id="adminView-reports" class="admin-view" style="display:none;">
+        <div class="card">
+            <h3 class="section-title">Student Complaints & Reports</h3>
+            <div style="overflow-x:auto;">
+                <table style="width:100%; border-collapse:collapse; font-size:12px; text-align:left;">
+                    <thead>
+                        <tr style="border-bottom:2px solid var(--border); padding:8px;">
+                            <th style="padding:10px;">Reporter</th>
+                            <th style="padding:10px;">Reported Entity</th>
+                            <th style="padding:10px;">Reason</th>
+                            <th style="padding:10px;">Details</th>
+                            <th style="padding:10px;">Screenshot</th>
+                            <th style="padding:10px;">Status</th>
+                            <th style="padding:10px; text-align:center;">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="adminReportsTableBody">
+                        <tr><td colspan="7" style="text-align:center;color:var(--text-muted);padding:20px;">Loading complaints...</td></tr>
+                    </tbody>
+                </table>
             </div>
         </div>
     </div>
@@ -1273,7 +1394,7 @@
                     <option value="admin">Administrator</option>
                 </select>
             </div>
-            <div class="form-group"><label>Email Address</label><input type="email" id="loginEmail" placeholder="student@susl.lk"></div>
+            <div class="form-group"><label>Email Address or Index Number</label><input type="text" id="loginEmail" placeholder="student@susl.lk or 22FIS0100"></div>
             <div class="form-group"><label>Password</label><input type="password" id="loginPassword" placeholder="••••••••"></div>
             <button class="btn btn-primary" style="width:100%;margin-top:8px;" onclick="submitLogin()">Sign In</button>
             <div style="text-align:center;margin-top:16px;font-size:13px;color:var(--text-muted);">
@@ -1287,7 +1408,7 @@
             <div class="form-group"><label>Full Name</label><input type="text" id="regName" placeholder="e.g. John Doe"></div>
             <div class="form-group"><label>Email Address</label><input type="email" id="regEmail" placeholder="student@susl.lk"></div>
             <div class="grid-2">
-                <div class="form-group"><label>Student ID</label><input type="text" id="regStudentId" placeholder="e.g. 22FIS0100"></div>
+                <div class="form-group"><label>Student ID *</label><input type="text" id="regStudentId" placeholder="e.g. 22FIS0100"></div>
                 <div class="form-group"><label>Year</label>
                     <select id="regYear"><option value="1">Year 1</option><option value="2">Year 2</option><option value="3">Year 3</option><option value="4">Year 4</option></select>
                 </div>
@@ -1315,10 +1436,120 @@
                 Remembered it? <a href="#" style="color:var(--primary);text-decoration:none;font-weight:600;" onclick="toggleAuthMode('login');return false;">Sign In</a>
             </div>
         </div>
+</div>
+</div>
+
+<!-- REPORT MODAL -->
+<div id="reportModalOverlay" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:1100;align-items:center;justify-content:center;">
+    <div style="background:var(--surface);border-radius:var(--radius);padding:28px;width:400px;max-width:90vw;position:relative;">
+        <button class="icon-btn" style="position:absolute;top:16px;right:16px;" onclick="closeReportModal()"><i class="fa-solid fa-xmark"></i></button>
+        <h3 style="margin-bottom:18px;font-size:16px;font-family:'Playfair Display',serif;color:var(--primary);">Report Content</h3>
+        
+        <input type="hidden" id="reportPostId">
+        <input type="hidden" id="reportStudentId">
+        
+        <div class="form-group">
+            <label>Reason *</label>
+            <select id="reportReason">
+                <option value="Inappropriate Content">Inappropriate/Offensive Content</option>
+                <option value="Harassment or Abuse">Harassment or Abuse</option>
+                <option value="Spam or Scam">Spam or Scam</option>
+                <option value="Fake Boarding Info">Fake Boarding/Accommodation Info</option>
+                <option value="Other">Other</option>
+            </select>
+        </div>
+        
+        <div class="form-group">
+            <label>Details & Explanation *</label>
+            <textarea id="reportDetails" placeholder="Please provide additional details about this issue..." style="width:100%;height:100px;padding:10px;border:1px solid var(--border);border-radius:10px;font-size:12px;background:var(--bg);color:var(--text);resize:none;box-sizing:border-box;"></textarea>
+        </div>
+        
+        <div class="form-group">
+            <label>Upload Screenshot (Optional)</label>
+            <input type="file" id="reportScreenshot" accept="image/*" style="width:100%;font-size:11px;">
+        </div>
+        
+        <div style="display:flex;gap:10px;margin-top:16px;">
+            <button class="btn btn-primary" onclick="submitReport()">Submit Report</button>
+            <button class="btn btn-outline" onclick="closeReportModal()">Cancel</button>
+        </div>
+    </div>
+</div>
+
+<!-- STUDENT WARNING DETAIL MODAL -->
+<div id="studentWarningDetailModalOverlay" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:1200;align-items:center;justify-content:center;backdrop-filter:blur(4px);">
+    <div style="background:var(--surface);border-radius:var(--radius);padding:28px;width:450px;max-width:90vw;position:relative;text-align:center;box-shadow:0 10px 25px rgba(0,0,0,0.2);">
+        <button class="icon-btn" style="position:absolute;top:16px;right:16px;" onclick="closeStudentWarningModal()"><i class="fa-solid fa-xmark"></i></button>
+        <div style="width:50px;height:50px;border-radius:50%;background:rgba(192,57,43,0.1);color:var(--danger);display:flex;align-items:center;justify-content:center;font-size:24px;margin:0 auto 16px auto;">
+            <i class="fa-solid fa-triangle-exclamation"></i>
+        </div>
+        <h3 style="margin-bottom:10px;font-size:18px;color:var(--danger);font-weight:700;">Account Warning from Admin</h3>
+        <p style="font-size:13px;color:var(--text-muted);margin-bottom:20px;">
+            Warnings Count: <span id="studentWarningCount" style="font-weight:bold;color:var(--text);">0</span>
+        </p>
+        <div style="background:var(--bg);border:1px solid var(--border);border-radius:10px;padding:16px;margin-bottom:24px;text-align:left;font-size:13px;line-height:1.6;color:var(--text);white-space:pre-line;word-break:break-word;" id="studentWarningMessageBody">
+            No warning message text.
+        </div>
+        <div>
+            <button class="btn btn-primary" style="background:var(--danger);border-color:var(--danger);width:100%;" onclick="closeStudentWarningModal()">I Understand & Close</button>
+        </div>
+    </div>
+</div>
+
+<!-- ADMIN WARN MODAL -->
+<div id="adminWarnModalOverlay" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:1100;align-items:center;justify-content:center;">
+    <div style="background:var(--surface);border-radius:var(--radius);padding:28px;width:400px;max-width:90vw;position:relative;">
+        <button class="icon-btn" style="position:absolute;top:16px;right:16px;" onclick="closeAdminWarnModal()"><i class="fa-solid fa-xmark"></i></button>
+        <h3 style="margin-bottom:18px;font-size:16px;color:var(--primary);">Send Account Warning</h3>
+        
+        <input type="hidden" id="warnReportId">
+        
+        <div class="form-group">
+            <label>Warning Message *</label>
+            <textarea id="adminWarningMsgText" placeholder="Explain the violation and request correction..." style="width:100%;height:100px;padding:10px;border:1px solid var(--border);border-radius:10px;font-size:12px;background:var(--bg);color:var(--text);resize:none;box-sizing:border-box;"></textarea>
+        </div>
+        
+        <div style="display:flex;gap:10px;margin-top:16px;">
+            <button class="btn btn-primary" onclick="submitAdminWarning()">Send Warning</button>
+            <button class="btn btn-outline" onclick="closeAdminWarnModal()">Cancel</button>
+        </div>
     </div>
 </div>
 
 <script>
+function showStudentWarningModal(msg, count) {
+    document.getElementById('studentWarningCount').textContent = count || 0;
+    document.getElementById('studentWarningMessageBody').textContent = msg || '';
+    document.getElementById('studentWarningDetailModalOverlay').style.display = 'flex';
+}
+function closeStudentWarningModal() {
+    document.getElementById('studentWarningDetailModalOverlay').style.display = 'none';
+    const userStr = localStorage.getItem('susl_user');
+    const user = userStr ? JSON.parse(userStr) : null;
+    if (user && user.warning_message) {
+        localStorage.setItem('susl_last_read_warning_msg', user.warning_message);
+        localStorage.setItem('susl_last_read_warning_count', user.warnings_count);
+        updateProfileUI(user);
+        if (typeof renderNotifications === 'function') renderNotifications();
+        if (typeof renderProfileNotifications === 'function') renderProfileNotifications();
+    }
+}
+function triggerStudentWarningModalFromProfile() {
+    const userStr = localStorage.getItem('susl_user');
+    const user = userStr ? JSON.parse(userStr) : null;
+    if (user && user.warning_message) {
+        // Mark as read when they click to open
+        localStorage.setItem('susl_last_read_warning_msg', user.warning_message);
+        localStorage.setItem('susl_last_read_warning_count', user.warnings_count);
+        if (typeof renderNotifications === 'function') renderNotifications();
+        if (typeof renderProfileNotifications === 'function') renderProfileNotifications();
+        
+        showStudentWarningModal(user.warning_message, user.warnings_count);
+    } else {
+        showStudentWarningModal("No active warning message.", 0);
+    }
+}
+
 // ── API HELPER ──
 async function apiFetch(url, options = {}) {
     options.headers = options.headers || {};
@@ -1573,6 +1804,7 @@ function initAuth() {
     }
     
     updateAuthBtn();
+    if(typeof renderNotifications === 'function') renderNotifications();
 }
 
 function updateProfileUI(user) {
@@ -1595,10 +1827,40 @@ function updateProfileUI(user) {
         document.getElementById('statQuestions').textContent = myPosts.filter(p => p.category === 'Academic Help').length;
         const totalComments = myPosts.reduce((sum, p) => sum + (postComments[p.id] ? postComments[p.id].length : 0), 0);
         document.getElementById('statComments').textContent = totalComments;
+
+        // Render warnings
+        const alertsEl = document.getElementById('homeAlertsContainer');
+        
+        let isWarnRead = false;
+        if (user.warning_message) {
+            const lastReadMsg = localStorage.getItem('susl_last_read_warning_msg');
+            const lastReadCount = parseInt(localStorage.getItem('susl_last_read_warning_count') || '0');
+            if (user.warning_message === lastReadMsg && user.warnings_count === lastReadCount) {
+                isWarnRead = true;
+            }
+        }
+
+        if (user.warning_message && !isWarnRead && alertsEl) {
+            alertsEl.innerHTML = `
+                <div class="card" style="border:1px solid var(--danger);background:rgba(192,57,43,0.08);color:var(--text);padding:16px;border-radius:12px;display:flex;align-items:center;gap:12px;text-align:left;margin-bottom:20px;cursor:pointer;" onclick="triggerStudentWarningModalFromProfile()">
+                    <div style="width:36px;height:36px;border-radius:50%;background:var(--danger);color:#fff;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0;">
+                        <i class="fa-solid fa-triangle-exclamation"></i>
+                    </div>
+                    <div style="flex:1;">
+                        <h4 style="margin:0 0 4px 0;font-size:13px;font-weight:700;color:var(--danger);">Account Warning from Admin (Click to read)</h4>
+                        <p style="margin:0;font-size:12px;line-height:1.4;">"${escHtml(user.warning_message)}" (Warnings Count: ${user.warnings_count})</p>
+                    </div>
+                </div>
+            `;
+        } else if (alertsEl) {
+            alertsEl.innerHTML = '';
+        }
     } else {
         document.getElementById('profileNameBig').textContent = 'Guest User';
         document.getElementById('profileIndexBig').textContent = 'Index: N/A';
         document.getElementById('profileYearBig').textContent = 'Sign in to see your profile';
+        const alertsEl = document.getElementById('homeAlertsContainer');
+        if (alertsEl) alertsEl.innerHTML = '';
     }
 }
 
@@ -1632,6 +1894,17 @@ function switchProfileTab(tabName) {
         loadChatHistory();
     } else if(tabName === 'notifications') {
         renderProfileNotifications();
+        if (isLoggedIn) {
+            apiFetch('/api/v1/profile').then(data => {
+                if (data && data.student) {
+                    localStorage.setItem('susl_user', JSON.stringify(data.student));
+                    updateProfileUI(data.student);
+                    renderProfileNotifications();
+                }
+            }).catch(e => {
+                console.error('Failed to sync profile for notifications tab:', e);
+            });
+        }
     } else if(tabName === 'settings') {
         // Sync toggle states
         document.getElementById('settDarkToggle').checked = document.body.classList.contains('dark');
@@ -1720,20 +1993,58 @@ async function loadChatHistory() {
 
 function renderProfileNotifications() {
     const container = document.getElementById('profileNotificationsList');
-    if(!NOTIFICATIONS.length) {
+    const userStr = localStorage.getItem('susl_user');
+    const user = userStr ? JSON.parse(userStr) : null;
+    
+    let isWarnRead = false;
+    if (user && user.warning_message) {
+        const lastReadMsg = localStorage.getItem('susl_last_read_warning_msg');
+        const lastReadCount = parseInt(localStorage.getItem('susl_last_read_warning_count') || '0');
+        if (user.warning_message === lastReadMsg && user.warnings_count === lastReadCount) {
+            isWarnRead = true;
+        }
+    }
+    
+    // Create a copy of local notifications
+    let activeNotifs = [...NOTIFICATIONS];
+    
+    // If the student has an active warning, prepend it
+    if (isLoggedIn && user && user.warning_message) {
+        activeNotifs.unshift({
+            text: `⚠️ ACCOUNT WARNING: ${user.warning_message}`,
+            time: 'Important',
+            read: isWarnRead,
+            isWarning: true
+        });
+    }
+
+    if(!activeNotifs.length) {
         container.innerHTML = '<p style="color:var(--text-muted);font-size:13px;">No notifications yet.</p>';
         return;
     }
     
-    container.innerHTML = NOTIFICATIONS.map(n => `
-        <div style="padding:16px 0;border-bottom:1px solid var(--border);display:flex;gap:12px;align-items:flex-start;">
-            <div style="width:8px;height:8px;border-radius:50%;background:${n.read ? 'transparent' : 'var(--danger)'};margin-top:6px;"></div>
-            <div>
-                <div style="font-size:14px;font-weight:${n.read ? '400' : '600'};">${n.text}</div>
-                <div style="font-size:12px;color:var(--text-muted);margin-top:4px;">${n.time}</div>
+    container.innerHTML = activeNotifs.map(n => {
+        if (n.isWarning) {
+            return `
+                <div style="padding:16px;border-bottom:1px solid var(--border);display:flex;gap:12px;align-items:flex-start;background:${n.read ? 'transparent' : 'rgba(192,57,43,0.06)'};border-left:4px solid var(--danger);cursor:pointer;" onclick="triggerStudentWarningModalFromProfile()">
+                    <div style="width:8px;height:8px;border-radius:50%;background:${n.read ? 'transparent' : 'var(--danger)'};margin-top:6px;"></div>
+                    <div>
+                        <div style="font-size:14px;font-weight:700;color:var(--danger);">${escHtml(n.text)}</div>
+                        <div style="font-size:12px;color:var(--danger);font-weight:700;margin-top:4px;">${n.time}</div>
+                    </div>
+                </div>
+            `;
+        }
+        return `
+            <div style="padding:16px 0;border-bottom:1px solid var(--border);display:flex;gap:12px;align-items:flex-start;">
+                <div style="width:8px;height:8px;border-radius:50%;background:${n.read ? 'transparent' : 'var(--danger)'};margin-top:6px;"></div>
+                <div>
+                    <div style="font-size:14px;font-weight:${n.read ? '400' : '600'};">${n.text}</div>
+                    <div style="font-size:12px;color:var(--text-muted);margin-top:4px;">${n.time}</div>
+                </div>
             </div>
-        </div>
-    `).join('');
+        `;
+    }).join('');
 }
 
 async function submitChangePassword() {
@@ -1908,13 +2219,19 @@ async function submitRegister() {
     const payload = {
         name: document.getElementById('regName').value,
         email: document.getElementById('regEmail').value,
-        student_id: document.getElementById('regStudentId').value,
+        student_id: document.getElementById('regStudentId').value.trim(),
         year: parseInt(document.getElementById('regYear').value) || 1,
         faculty: document.getElementById('regFaculty').value,
         password: document.getElementById('regPassword').value,
         password_confirmation: document.getElementById('regPasswordConfirm').value
     };
     const errEl = document.getElementById('authErrorMsg');
+    
+    if (!payload.student_id) {
+        errEl.textContent = "Student ID (Index Number) is required.";
+        errEl.style.display = 'block';
+        return;
+    }
     
     try {
         const data = await apiFetch('/api/v1/register', {
@@ -1985,29 +2302,93 @@ async function doLogout() {
 
 // ── NOTIFICATIONS ──
 function renderNotifications() {
-    const unread = NOTIFICATIONS.filter(n => !n.read).length;
+    const userStr = localStorage.getItem('susl_user');
+    const user = userStr ? JSON.parse(userStr) : null;
+    
+    let isWarnRead = false;
+    if (user && user.warning_message) {
+        const lastReadMsg = localStorage.getItem('susl_last_read_warning_msg');
+        const lastReadCount = parseInt(localStorage.getItem('susl_last_read_warning_count') || '0');
+        if (user.warning_message === lastReadMsg && user.warnings_count === lastReadCount) {
+            isWarnRead = true;
+        }
+    }
+    
+    // Create a copy of local notifications
+    let activeNotifs = [...NOTIFICATIONS];
+    let warningCount = 0;
+    
+    // If the student has an active warning, prepend it
+    if (isLoggedIn && user && user.warning_message) {
+        activeNotifs.unshift({
+            text: `⚠️ ACCOUNT WARNING: ${user.warning_message}`,
+            time: 'Important',
+            read: isWarnRead,
+            isWarning: true
+        });
+        if (!isWarnRead) {
+            warningCount = 1;
+        }
+    }
+
+    const unread = NOTIFICATIONS.filter(n => !n.read).length + warningCount;
     const badge = document.getElementById('notifBadge');
     badge.style.display = unread > 0 ? 'block' : 'none';
+    
     const list = document.getElementById('notifList');
-    list.innerHTML = NOTIFICATIONS.map(n => `
-        <div class="notif-item">
-            <div class="notif-dot ${n.read ? 'read' : ''}"></div>
-            <div>
-                <div class="notif-text">${n.text}</div>
-                <div class="notif-time">${n.time}</div>
+    list.innerHTML = activeNotifs.map(n => {
+        if (n.isWarning) {
+            return `
+                <div class="notif-item" style="background:${n.read ? 'transparent' : 'rgba(192,57,43,0.06)'}; cursor:pointer; border-left:4px solid var(--danger);" onclick="triggerStudentWarningModalFromProfile()">
+                    <div class="notif-dot ${n.read ? 'read' : ''}"></div>
+                    <div>
+                        <div class="notif-text" style="font-weight:600; color:var(--danger);">${escHtml(n.text)}</div>
+                        <div class="notif-time" style="color:var(--danger); font-weight:700;">${n.time}</div>
+                    </div>
+                </div>
+            `;
+        }
+        return `
+            <div class="notif-item">
+                <div class="notif-dot ${n.read ? 'read' : ''}"></div>
+                <div>
+                    <div class="notif-text">${n.text}</div>
+                    <div class="notif-time">${n.time}</div>
+                </div>
             </div>
-        </div>
-    `).join('');
+        `;
+    }).join('');
 }
 
 function toggleNotifPanel() {
     notifPanelOpen = !notifPanelOpen;
     document.getElementById('notifPanel').classList.toggle('open', notifPanelOpen);
+    if (notifPanelOpen && isLoggedIn) {
+        apiFetch('/api/v1/profile').then(data => {
+            if (data && data.student) {
+                localStorage.setItem('susl_user', JSON.stringify(data.student));
+                updateProfileUI(data.student);
+                renderNotifications();
+            }
+        }).catch(e => {
+            console.error('Failed to sync profile for notifications:', e);
+        });
+    }
 }
 
 function markAllRead() {
     NOTIFICATIONS.forEach(n => n.read = true);
+    
+    // Also mark warning as read if user is logged in
+    const userStr = localStorage.getItem('susl_user');
+    const user = userStr ? JSON.parse(userStr) : null;
+    if (user && user.warning_message) {
+        localStorage.setItem('susl_last_read_warning_msg', user.warning_message);
+        localStorage.setItem('susl_last_read_warning_count', user.warnings_count);
+    }
+    
     renderNotifications();
+    if (typeof renderProfileNotifications === 'function') renderProfileNotifications();
 }
 
 function addNotif(text) {
@@ -2086,10 +2467,15 @@ function doSearch() {
     } else {
         container.innerHTML = `<div class="card"><h3 class="section-title">Search Results</h3>` +
             results.map(m => `
-            <div class="module-result">
-                <h4><strong>${m.code}</strong> — ${m.name} <span class="tag tag-blue">${m.credits} Credits</span></h4>
-                <p>${m.desc}</p>
-                <p style="margin-top:4px;font-size:12px;">👤 ${m.faculty} &nbsp;|&nbsp; Pre-req: ${m.prereq}</p>
+            <div class="module-result" style="display:flex; justify-content:space-between; align-items:center; gap:16px;">
+                <div style="flex:1;">
+                    <h4><strong>${m.code}</strong> — ${m.name} <span class="tag tag-blue">${m.credits} Credits</span></h4>
+                    <p style="margin:4px 0 0 0;">${m.desc}</p>
+                    <p style="margin-top:4px;font-size:12px;">👤 ${m.faculty} &nbsp;|&nbsp; Pre-req: ${m.prereq}</p>
+                </div>
+                <button class="btn btn-outline" style="font-size:11px; padding:6px 12px; margin:0;" onclick="addCatalogModuleToGpa('${m.code}', '${m.name.replace(/'/g, "\\'")}', ${m.credits})">
+                    <i class="fa-solid fa-plus"></i> Add to GPA
+                </button>
             </div>`).join('') + `</div>`;
     }
 }
@@ -2101,9 +2487,14 @@ function renderAllModules() {
         return;
     }
     container.innerHTML = MODULES_DB.map(m => `
-        <div class="module-result">
-            <h4><strong>${m.code}</strong> — ${m.name} <span class="tag tag-blue">${m.credits} Cr</span></h4>
-            <p style="font-size:12px;">${m.faculty || 'Unassigned'} · Pre-req: ${m.prereq || 'None'}</p>
+        <div class="module-result" style="display:flex; justify-content:space-between; align-items:center; gap:16px;">
+            <div style="flex:1;">
+                <h4><strong>${m.code}</strong> — ${m.name} <span class="tag tag-blue">${m.credits} Cr</span></h4>
+                <p style="font-size:12px; margin:4px 0 0 0;">${m.faculty || 'Unassigned'} · Pre-req: ${m.prereq || 'None'}</p>
+            </div>
+            <button class="btn btn-outline" style="font-size:11px; padding:6px 12px; margin:0;" onclick="addCatalogModuleToGpa('${m.code}', '${m.name.replace(/'/g, "\\'")}', ${m.credits})">
+                <i class="fa-solid fa-plus"></i> Add to GPA
+            </button>
         </div>`).join('');
 }
 
@@ -2582,7 +2973,7 @@ async function fetchPosts() {
                     category: p.description || 'General',
                     time: new Date(p.created_at).toLocaleDateString(),
                     likes: 0,
-                    image: imgStore[p.post_content.substring(0,50)] || null
+                    image: p.image_path ? (p.image_path.startsWith('http') ? p.image_path : window.location.origin + '/storage/' + p.image_path) : (imgStore[p.post_content.substring(0,50)] || null)
                 };
             });
             renderPosts(currentFilter);
@@ -2637,11 +3028,12 @@ function renderPosts(filter) {
                 </div>
             </div>
             <p style="font-size:14px;line-height:1.6;">${escHtml(p.text)}</p>
-            ${p.image ? `<img src="${p.image}" class="post-image" alt="post image">` : ''}
-            <div class="post-actions">
+            ${p.image ? `<div style="max-height:300px; overflow:hidden; display:flex; justify-content:center; align-items:center; border-radius:8px; margin-bottom:12px; border:1px solid var(--border);"><img src="${p.image}" style="max-height:300px; width:100%; object-fit:contain;" alt="post image"></div>` : ''}
+            <div class="post-actions" style="display:flex; align-items:center;">
                 <button class="post-action-btn" onclick="likePost(${p.id})" style="${isLiked ? 'color:var(--danger);' : ''}"><i class="fa-${isLiked ? 'solid' : 'regular'} fa-heart"></i> ${p.likes || ''}</button>
                 <button class="post-action-btn" onclick="toggleCommentSection(${p.id})"><i class="fa-regular fa-comment"></i> ${comments.length || ''} Comment</button>
                 <button class="post-action-btn" onclick="sharePost(${p.id})"><i class="fa-solid fa-share-nodes"></i> Share</button>
+                <button class="post-action-btn" onclick="openReportPostModal(${p.id})" style="color:var(--danger); margin-left:auto;"><i class="fa-solid fa-flag"></i> Report</button>
             </div>
             <div class="comment-section" id="commentSection_${p.id}" style="display:none;">
                 ${commentHtml || '<p style="color:var(--text-muted);font-size:12px;">No comments yet.</p>'}
@@ -2786,6 +3178,9 @@ function switchAdminTab(tabName) {
         if(toggleTheme) toggleTheme.checked = document.body.classList.contains('dark');
         const toggleGlass = document.getElementById('adminGlassToggle');
         if(toggleGlass) toggleGlass.checked = document.body.classList.contains('glass-mode');
+    }
+    if (tabName === 'reports') {
+        loadAdminComplaints();
     }
 }
 
@@ -3297,6 +3692,523 @@ async function submitAdminNewsHome() {
     } catch(e) {
         addNotif('⚠️ Failed to publish news: ' + e.message);
     }
+}
+
+// ── STUDENT PEER CHAT (BLADE INTERFACE) ──
+let currentSelectedPeer = null;
+let peerMessages = [];
+let selectedPeerFile = null;
+let peerMessagesInterval = null;
+let recentChatsInterval = null;
+
+function switchChatTab(tab) {
+    document.getElementById('btnAiChatTab').className = tab === 'ai' ? 'btn btn-primary' : 'btn btn-outline';
+    document.getElementById('btnPeerChatTab').className = tab === 'peer' ? 'btn btn-primary' : 'btn btn-outline';
+    
+    // Toggle displays
+    document.getElementById('aiChatWrap').style.display = tab === 'ai' ? 'block' : 'none';
+    document.getElementById('peerChatWrap').style.display = tab === 'peer' ? 'flex' : 'none';
+    
+    // Quick prompt chips display toggle
+    const quickChips = document.querySelector('#chatbot div[style*="flex-wrap:wrap"]');
+    if (quickChips) {
+        quickChips.style.display = tab === 'ai' ? 'flex' : 'none';
+    }
+    
+    if (tab === 'peer') {
+        loadRecentPeerChats();
+        startPeerPolling();
+    } else {
+        stopPeerPolling();
+    }
+}
+
+function startPeerPolling() {
+    stopPeerPolling();
+    loadRecentPeerChats();
+    recentChatsInterval = setInterval(loadRecentPeerChats, 8000);
+    
+    if (currentSelectedPeer) {
+        loadPeerMessages();
+        peerMessagesInterval = setInterval(loadPeerMessages, 4000);
+    }
+}
+
+function stopPeerPolling() {
+    if (peerMessagesInterval) clearInterval(peerMessagesInterval);
+    if (recentChatsInterval) clearInterval(recentChatsInterval);
+}
+
+async function loadRecentPeerChats() {
+    if (!isLoggedIn) return;
+    try {
+        const res = await apiFetch('/api/v1/peer-chats');
+        const container = document.getElementById('peerThreadsContainer');
+        if (!res || res.length === 0) {
+            container.innerHTML = '<p style="font-size:11px; color:var(--text-muted); text-align:center; padding:20px 0;">No active chats.</p>';
+            return;
+        }
+        
+        const userStr = localStorage.getItem('susl_user');
+        const currentUser = userStr ? JSON.parse(userStr) : null;
+        const currentUserId = currentUser ? currentUser.id : null;
+        
+        container.innerHTML = res.map(conv => {
+            const peer = conv.peer;
+            const lastMsg = conv.last_message;
+            const isActive = currentSelectedPeer && currentSelectedPeer.student_id === peer.student_id;
+            
+            const initials = peer.name.split(' ').map(n=>n[0]).join('').substring(0,2).toUpperCase();
+            const avatarHtml = peer.avatar 
+                ? `<img src="${window.location.origin}/storage/${peer.avatar}" style="width:34px;height:34px;border-radius:50%;object-fit:cover;">`
+                : `<div style="width:34px;height:34px;border-radius:50%;background:rgba(128,0,0,0.1);color:#800000;font-weight:700;display:flex;align-items:center;justify-content:center;font-size:12px;">${initials}</div>`;
+                
+            const lastMsgSnippet = lastMsg 
+                ? (lastMsg.message || '📎 File attachment') 
+                : `Index: ${peer.student_id}`;
+                
+            const unreadBadge = conv.unread_count > 0 
+                ? `<span style="background:#800000;color:#fff;font-size:9px;font-weight:700;border-radius:50%;width:16px;height:16px;display:flex;align-items:center;justify-content:center;margin-left:auto;">${conv.unread_count}</span>` 
+                : '';
+                
+            const timeHtml = conv.last_interaction_time 
+                ? `<span style="font-size:9px;color:var(--text-muted);margin-left:auto;">${new Date(conv.last_interaction_time).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}</span>` 
+                : '';
+
+            return `
+                <div onclick='selectPeer(${JSON.stringify(peer)})' style="display:flex;align-items:center;gap:10px;padding:8px 10px;border-radius:10px;cursor:pointer;transition:background 0.2s;background:${isActive ? 'rgba(128,0,0,0.05)' : 'transparent'};border-left:${isActive ? '3px solid #800000' : 'none'};" class="peer-item-hover">
+                    ${avatarHtml}
+                    <div style="flex:1;min-width:0;text-align:left;">
+                        <div style="display:flex;align-items:center;justify-content:space-between;">
+                            <span style="font-size:12px;font-weight:700;color:var(--text);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${escHtml(peer.name)}</span>
+                            ${timeHtml}
+                        </div>
+                        <div style="display:flex;align-items:center;justify-content:space-between;margin-top:2px;">
+                            <span style="font-size:10px;color:var(--text-muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:140px;">${escHtml(lastMsgSnippet)}</span>
+                            ${unreadBadge}
+                        </div>
+                    </div>
+                </div>
+            `;
+        }).join('');
+    } catch (err) {
+        console.error(err);
+    }
+}
+
+let peerSearchTimeout = null;
+function doPeerSearch() {
+    const q = document.getElementById('peerSearchInput').value.trim();
+    const dropdown = document.getElementById('peerSearchResults');
+    if (!q) {
+        dropdown.style.display = 'none';
+        return;
+    }
+    if (peerSearchTimeout) clearTimeout(peerSearchTimeout);
+    peerSearchTimeout = setTimeout(async () => {
+        try {
+            const res = await apiFetch(`/api/v1/peer-chats/search?query=${encodeURIComponent(q)}`);
+            if (!res || res.length === 0) {
+                dropdown.innerHTML = '<div style="padding:10px;text-align:center;font-size:11px;color:var(--text-muted);">No student found. Search by full Index Number (e.g. 22FIS0580)</div>';
+                dropdown.style.display = 'block';
+                return;
+            }
+            dropdown.innerHTML = res.map(st => {
+                const initials = st.name.split(' ').map(n=>n[0]).join('').substring(0,2).toUpperCase();
+                const avatarHtml = st.avatar 
+                    ? `<img src="${window.location.origin}/storage/${st.avatar}" style="width:28px;height:28px;border-radius:50%;object-fit:cover;">`
+                    : `<div style="width:28px;height:28px;border-radius:50%;background:rgba(128,0,0,0.1);color:#800000;font-weight:700;display:flex;align-items:center;justify-content:center;font-size:10px;">${initials}</div>`;
+                return `
+                    <div onclick='selectPeer(${JSON.stringify(st)})' style="display:flex;align-items:center;gap:10px;padding:8px 10px;cursor:pointer;" class="peer-item-hover">
+                        ${avatarHtml}
+                        <div style="min-width:0;text-align:left;">
+                            <div style="font-size:11px;font-weight:700;color:var(--text);">${escHtml(st.name)}</div>
+                            <div style="font-size:9px;color:var(--text-muted);">${st.student_id} · ${st.faculty || 'SUSL'}</div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+            dropdown.style.display = 'block';
+        } catch(e) {
+            console.error(e);
+        }
+    }, 400);
+}
+
+function selectPeer(peer) {
+    currentSelectedPeer = peer;
+    document.getElementById('peerSearchInput').value = '';
+    document.getElementById('peerSearchResults').style.display = 'none';
+    
+    // UI transitions
+    document.getElementById('peerChatEmptyState').style.display = 'none';
+    document.getElementById('peerChatActiveFrame').style.display = 'flex';
+    
+    // Header details
+    const initials = peer.name.split(' ').map(n=>n[0]).join('').substring(0,2).toUpperCase();
+    const avatarBox = document.getElementById('peerActiveAvatar');
+    if (peer.avatar) {
+        avatarBox.innerHTML = `<img src="${window.location.origin}/storage/${peer.avatar}" style="width:100%;height:100%;border-radius:50%;object-fit:cover;">`;
+    } else {
+        avatarBox.innerHTML = initials;
+    }
+    document.getElementById('peerActiveName').textContent = peer.name;
+    document.getElementById('peerActiveId').textContent = `${peer.student_id} · ${peer.faculty || 'SUSL Student'}`;
+    
+    // Refresh message stream
+    document.getElementById('peerChatMessagesBox').innerHTML = '<p style="text-align:center;font-size:11px;color:var(--text-muted);padding:20px 0;">Loading conversation history...</p>';
+    loadPeerMessages();
+    
+    // Restart polling for active chat
+    startPeerPolling();
+}
+
+async function loadPeerMessages() {
+    if (!currentSelectedPeer || !isLoggedIn) return;
+    try {
+        const res = await apiFetch(`/api/v1/peer-chats/${currentSelectedPeer.student_id}/messages`);
+        if (!res) return;
+        
+        peerMessages = res.messages || [];
+        
+        const userStr = localStorage.getItem('susl_user');
+        const currentUser = userStr ? JSON.parse(userStr) : null;
+        const currentUserId = currentUser ? currentUser.id : null;
+        
+        const box = document.getElementById('peerChatMessagesBox');
+        if (peerMessages.length === 0) {
+            box.innerHTML = '<p style="text-align:center;font-size:11px;color:var(--text-muted);padding:20px 0;">No messages yet. Send a message to start chatting!</p>';
+            return;
+        }
+        
+        let autoScroll = box.scrollTop + box.clientHeight >= box.scrollHeight - 50;
+        
+        box.innerHTML = peerMessages.map(m => {
+            const isOurs = Number(m.sender_id) === Number(currentUserId);
+            const isImg = isImageFile(m.file_type, m.file_name);
+            
+            let attachmentHtml = '';
+            if (m.file_path) {
+                if (isImg) {
+                    attachmentHtml = `
+                        <div style="margin-bottom:6px;">
+                            <a href="${window.location.origin}/storage/${m.file_path}" target="_blank" style="display:block;">
+                                <img src="${window.location.origin}/storage/${m.file_path}" style="max-width:200px;max-height:150px;border-radius:8px;object-fit:contain;border:1px solid var(--border);">
+                            </a>
+                        </div>
+                    `;
+                } else {
+                    attachmentHtml = `
+                        <div style="margin-bottom:6px;">
+                            <a href="${window.location.origin}/storage/${m.file_path}" target="_blank" style="display:flex;align-items:center;gap:8px;padding:6px 10px;border:1px solid var(--border);border-radius:8px;background:${isOurs ? 'rgba(0,0,0,0.1)' : 'var(--surface2)'};color:${isOurs ? '#fff' : 'var(--primary)'};font-size:11px;text-decoration:none;min-width:0;max-width:200px;">
+                                <i class="fa-solid fa-file-lines" style="flex-shrink:0;"></i>
+                                <span style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap;flex:1;">${escHtml(m.file_name || 'Document')}</span>
+                                <i class="fa-solid fa-download" style="flex-shrink:0;opacity:0.7;"></i>
+                            </a>
+                        </div>
+                    `;
+                }
+            }
+            
+            const messageText = m.message ? `<p style="margin:0;word-break:break-all;">${escHtml(m.message)}</p>` : '';
+            const time = new Date(m.created_at).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+            
+            const ticks = isOurs 
+                ? (m.is_read 
+                    ? '<i class="fa-solid fa-check-double" style="color:#64b5f6;font-size:10px;margin-left:4px;"></i>' 
+                    : '<i class="fa-solid fa-check" style="color:rgba(255,255,255,0.6);font-size:10px;margin-left:4px;"></i>')
+                : '';
+
+            return `
+                <div class="msg ${isOurs ? 'user' : 'bot'}" style="max-width:75%;padding:8px 12px;border-radius:12px;font-size:12px;line-height:1.4;align-self:${isOurs ? 'flex-end' : 'flex-start'};background:${isOurs ? '#800000' : '#fff'};color:${isOurs ? '#fff' : 'var(--text)'};border:${isOurs ? 'none' : '1px solid var(--border)'};border-bottom-${isOurs ? 'right' : 'left'}-radius:2px;">
+                    ${attachmentHtml}
+                    ${messageText}
+                    <div style="display:flex;align-items:center;justify-content:flex-end;margin-top:4px;font-size:8px;opacity:0.75;user-select:none;">
+                        <span>${time}</span>
+                        ${ticks}
+                    </div>
+                </div>
+            `;
+        }).join('');
+        
+        if (autoScroll) {
+            box.scrollTop = box.scrollHeight;
+        }
+        
+        // Mark unread messages as read
+        const hasUnread = peerMessages.some(m => Number(m.sender_id) !== Number(currentUserId) && !m.is_read);
+        if (hasUnread) {
+            apiFetch(`/api/v1/peer-chats/${currentSelectedPeer.student_id}/read`, { method: 'POST' })
+                .then(() => {
+                    loadRecentPeerChats();
+                })
+                .catch(e => console.error(e));
+        }
+    } catch (err) {
+        console.error(err);
+    }
+}
+
+function isImageFile(mime, filename) {
+    if (mime && mime.startsWith('image/')) return true;
+    if (filename) {
+        const ext = filename.split('.').pop().toLowerCase();
+        return ['jpg', 'jpeg', 'png', 'gif', 'webp', 'bmp'].includes(ext);
+    }
+    return false;
+}
+
+function handlePeerFileSelect() {
+    const input = document.getElementById('peerFileInput');
+    if (input.files && input.files[0]) {
+        selectedPeerFile = input.files[0];
+        document.getElementById('peerFilePreviewName').textContent = selectedPeerFile.name;
+        document.getElementById('peerFilePreviewChip').style.display = 'flex';
+    }
+}
+
+function clearSelectedPeerFile() {
+    selectedPeerFile = null;
+    document.getElementById('peerFileInput').value = '';
+    document.getElementById('peerFilePreviewChip').style.display = 'none';
+}
+
+async function sendPeerMessage() {
+    if (!currentSelectedPeer || !isLoggedIn) return;
+    const txtInput = document.getElementById('peerMessageInput');
+    const msgText = txtInput.value.trim();
+    if (!msgText && !selectedPeerFile) return;
+    
+    const btn = document.getElementById('peerSendBtn');
+    btn.disabled = true;
+    
+    try {
+        const formData = new FormData();
+        if (msgText) formData.append('message', msgText);
+        if (selectedPeerFile) formData.append('file', selectedPeerFile);
+        
+        txtInput.value = '';
+        clearSelectedPeerFile();
+        
+        const res = await apiFetch(`/api/v1/peer-chats/${currentSelectedPeer.student_id}/messages`, {
+            method: 'POST',
+            body: formData
+        });
+        
+        // Append to list and scroll
+        peerMessages.push(res);
+        loadPeerMessages();
+        
+        // Refresh active list
+        loadRecentPeerChats();
+    } catch(e) {
+        addNotif('⚠️ Failed to send message: ' + e.message);
+    } finally {
+        btn.disabled = false;
+    }
+}
+
+// ── COMPLAINTS / REPORTING MANAGEMENT ──
+function openReportPostModal(postId) {
+    if(!isLoggedIn) { toggleAuth(); return; }
+    document.getElementById('reportPostId').value = postId;
+    document.getElementById('reportStudentId').value = '';
+    document.getElementById('reportReason').value = 'Inappropriate Content';
+    document.getElementById('reportDetails').value = '';
+    document.getElementById('reportScreenshot').value = '';
+    document.getElementById('reportModalOverlay').style.display = 'flex';
+}
+
+function openReportPeerModal() {
+    if(!isLoggedIn || !currentSelectedPeer) return;
+    document.getElementById('reportPostId').value = '';
+    document.getElementById('reportStudentId').value = currentSelectedPeer.id;
+    document.getElementById('reportReason').value = 'Harassment or Abuse';
+    document.getElementById('reportDetails').value = '';
+    document.getElementById('reportScreenshot').value = '';
+    document.getElementById('reportModalOverlay').style.display = 'flex';
+}
+
+function closeReportModal() {
+    document.getElementById('reportModalOverlay').style.display = 'none';
+}
+
+async function submitReport() {
+    const postId = document.getElementById('reportPostId').value;
+    const studentId = document.getElementById('reportStudentId').value;
+    const reason = document.getElementById('reportReason').value;
+    const details = document.getElementById('reportDetails').value.trim();
+    const screenshotFile = document.getElementById('reportScreenshot').files[0];
+    
+    if(!details) {
+        alert('Please fill out the explanation details.');
+        return;
+    }
+    
+    const btn = document.querySelector('#reportModalOverlay .btn-primary');
+    btn.disabled = true;
+    
+    try {
+        const formData = new FormData();
+        if(postId) formData.append('reported_post_id', postId);
+        if(studentId) formData.append('reported_student_id', studentId);
+        formData.append('reason', reason);
+        formData.append('details', details);
+        if(screenshotFile) formData.append('screenshot', screenshotFile);
+        
+        await apiFetch('/api/v1/reports', {
+            method: 'POST',
+            body: formData
+        });
+        
+        addNotif('Report submitted successfully.');
+        closeReportModal();
+    } catch(e) {
+        addNotif('⚠️ Failed to submit report: ' + e.message);
+    } finally {
+        btn.disabled = false;
+    }
+}
+
+// Admin actions
+async function loadAdminComplaints() {
+    try {
+        const data = await apiFetch('/api/v1/admin/reports');
+        const tbody = document.getElementById('adminReportsTableBody');
+        if (!tbody) return;
+        
+        if(!data || data.length === 0) {
+            tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;color:var(--text-muted);padding:20px;">No complaints filed yet.</td></tr>';
+            return;
+        }
+        
+        tbody.innerHTML = data.map(rep => {
+            const reporter = rep.reporter ? `${rep.reporter.name} (${rep.reporter.student_id})` : 'System';
+            
+            let reportedEntity = 'N/A';
+            let deletePostBtn = '';
+            
+            if (rep.reported_post_id) {
+                const author = rep.reported_post && rep.reported_post.student ? rep.reported_post.student.name : 'Unknown';
+                const snippet = rep.reported_post ? rep.reported_post.post_content.substring(0, 40) + '...' : '[Deleted Post]';
+                reportedEntity = `<div><strong>Community Post</strong><div style="font-size:10px;color:var(--text-muted);">Author: ${author}</div><div style="font-size:10px;font-style:italic;max-width:200px;overflow:hidden;text-overflow:ellipsis;">"${snippet}"</div></div>`;
+                
+                if (rep.reported_post && rep.status === 'pending') {
+                    deletePostBtn = `<button class="btn btn-outline" style="color:var(--danger); border-color:var(--danger); font-size:10px; padding:3px 6px; margin:2px;" onclick="resolveComplaint(${rep.id}, 'delete_post')"><i class="fa-solid fa-trash"></i> Delete Post</button>`;
+                }
+            } else if (rep.reported_student_id) {
+                const name = rep.reported_student ? rep.reported_student.name : 'Unknown';
+                const sId = rep.reported_student ? rep.reported_student.student_id : rep.reported_student_id;
+                reportedEntity = `<div><strong>Student Chat Report</strong><div style="font-size:10px;color:var(--text-muted);">${name} (${sId})</div></div>`;
+            }
+            
+            const screenshotHtml = rep.screenshot_path 
+                ? `<a href="${window.location.origin}/storage/${rep.screenshot_path}" target="_blank" style="color:var(--primary);text-decoration:underline;">View Attachment</a>`
+                : '<span style="color:var(--text-muted);">None</span>';
+                
+            let statusBadge = '';
+            if (rep.status === 'pending') {
+                statusBadge = '<span class="tag tag-blue" style="background:#0284c7;color:#fff;">Pending</span>';
+            } else {
+                statusBadge = `<span class="tag" style="background:var(--success);color:#fff;">Resolved (${rep.action_taken || 'resolved'})</span>`;
+            }
+            
+            let actionsHtml = '-';
+            if (rep.status === 'pending') {
+                actionsHtml = `
+                    <div style="display:flex; flex-direction:column; align-items:center;">
+                        <button class="btn btn-outline" style="font-size:10px; padding:3px 6px; margin:2px;" onclick="openAdminWarnModal(${rep.id})"><i class="fa-solid fa-triangle-exclamation"></i> Warn User</button>
+                        ${deletePostBtn}
+                        <button class="btn btn-primary" style="background:var(--danger); border-color:var(--danger); font-size:10px; padding:3px 6px; margin:2px;" onclick="resolveComplaint(${rep.id}, 'ban')"><i class="fa-solid fa-ban"></i> Ban User</button>
+                    </div>
+                `;
+            }
+            
+            return `
+                <tr style="border-bottom:1px solid var(--border); vertical-align:top;">
+                    <td style="padding:10px;">${escHtml(reporter)}</td>
+                    <td style="padding:10px;">${reportedEntity}</td>
+                    <td style="padding:10px; font-weight:600; color:#800000;">${escHtml(rep.reason)}</td>
+                    <td style="padding:10px; max-width:200px; word-break:break-all;">${escHtml(rep.details || 'N/A')}</td>
+                    <td style="padding:10px;">${screenshotHtml}</td>
+                    <td style="padding:10px;">${statusBadge}</td>
+                    <td style="padding:10px; text-align:center;">${actionsHtml}</td>
+                </tr>
+            `;
+        }).join('');
+    } catch (e) {
+        console.error(e);
+    }
+}
+
+function openAdminWarnModal(reportId) {
+    document.getElementById('warnReportId').value = reportId;
+    document.getElementById('adminWarningMsgText').value = '';
+    document.getElementById('adminWarnModalOverlay').style.display = 'flex';
+}
+function closeAdminWarnModal() {
+    document.getElementById('adminWarnModalOverlay').style.display = 'none';
+}
+async function submitAdminWarning() {
+    const reportId = document.getElementById('warnReportId').value;
+    const warningMsg = document.getElementById('adminWarningMsgText').value.trim();
+    
+    if(!warningMsg) {
+        alert('Please fill out the warning message.');
+        return;
+    }
+    
+    try {
+        await apiFetch(`/api/v1/admin/reports/${reportId}/action`, {
+            method: 'POST',
+            body: JSON.stringify({
+                action: 'warn',
+                warning_message: warningMsg
+            })
+        });
+        addNotif('Warning message has been sent to the student.');
+        closeAdminWarnModal();
+        loadAdminComplaints();
+    } catch(e) {
+        addNotif('⚠️ Failed to issue warning: ' + e.message);
+    }
+}
+
+async function resolveComplaint(reportId, action) {
+    let confirmMsg = 'Are you sure you want to perform this moderation action?';
+    if (action === 'ban') confirmMsg = 'Are you sure you want to permanently BAN this student from the campus database?';
+    if (action === 'delete_post') confirmMsg = 'Are you sure you want to delete this community post?';
+    
+    if (!confirm(confirmMsg)) return;
+    
+    try {
+        await apiFetch(`/api/v1/admin/reports/${reportId}/action`, {
+            method: 'POST',
+            body: JSON.stringify({ action: action })
+        });
+        addNotif(`Action "${action}" executed successfully.`);
+        loadAdminComplaints();
+        fetchPosts(); // Refresh community posts if one was deleted
+    } catch(e) {
+        addNotif('⚠️ Failed to resolve complaint: ' + e.message);
+    }
+}
+
+// ── GPA MODULE SYNC FROM SYLLABUS CATALOG ──
+function addCatalogModuleToGpa(code, name, credits) {
+    if(!isLoggedIn) { toggleAuth(); return; }
+    
+    const fullName = `${code} ${name}`;
+    const exists = gpaModules.some(m => m.name.toLowerCase() === fullName.toLowerCase() || m.name.toLowerCase().includes(code.toLowerCase()));
+    
+    if (exists) {
+        addNotif(`⚠️ Module ${code} is already in your GPA list!`);
+        return;
+    }
+    
+    gpaModules.push({ name: fullName, credits: parseInt(credits), grade: 'A' });
+    renderGpa();
+    addNotif(`🎓 Added ${code} to GPA Calculator!`);
 }
 
 // ── INIT ──

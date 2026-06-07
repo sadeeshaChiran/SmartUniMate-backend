@@ -20,7 +20,7 @@ class AuthController extends Controller
             'name'       => 'required|string|max:255',
             'email'      => 'required|email|unique:students,email',
             'password'   => 'required|string|min:8|confirmed',
-            'student_id' => 'nullable|string|unique:students,student_id',
+            'student_id' => 'required|string|unique:students,student_id|max:50',
             'faculty'    => 'nullable|string|max:255',
             'year'       => 'nullable|integer|min:1|max:4',
             'phone'      => 'nullable|string|max:20',
@@ -30,7 +30,7 @@ class AuthController extends Controller
             'name'       => $validated['name'],
             'email'      => $validated['email'],
             'password'   => Hash::make($validated['password']),
-            'student_id' => $validated['student_id'] ?? null,
+            'student_id' => $validated['student_id'],
             'faculty'    => $validated['faculty'] ?? null,
             'year'       => $validated['year'] ?? null,
             'phone'      => $validated['phone'] ?? null,
@@ -52,15 +52,23 @@ class AuthController extends Controller
     public function login(Request $request)
     {
         $request->validate([
-            'email'    => 'required|email',
+            'email'    => 'required|string',
             'password' => 'required|string',
         ]);
 
-        $student = Student::where('email', $request->email)->first();
+        $student = Student::where('email', $request->email)
+            ->orWhere('student_id', $request->email)
+            ->first();
 
         if (! $student || ! Hash::check($request->password, $student->password)) {
             throw ValidationException::withMessages([
                 'email' => ['The provided credentials are incorrect.'],
+            ]);
+        }
+
+        if ($student->is_banned) {
+            throw ValidationException::withMessages([
+                'email' => ['Your account has been banned by the Administrator.'],
             ]);
         }
 

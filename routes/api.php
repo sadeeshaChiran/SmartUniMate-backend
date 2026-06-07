@@ -13,6 +13,9 @@ use App\Http\Controllers\Api\ProfileController;
 use App\Http\Controllers\Api\TimetableController;
 use App\Http\Controllers\Api\AcademicModuleController;
 
+use App\Http\Controllers\Api\PeerChatController;
+use App\Http\Controllers\Api\ReportController;
+
 Route::prefix('v1')->group(function () {
 
     // Public News Category Routes
@@ -61,10 +64,12 @@ Route::prefix('v1')->group(function () {
         Route::put('news-categories/{news_category}', [NewsCategoryController::class, 'update']);
         Route::delete('news-categories/{news_category}', [NewsCategoryController::class, 'destroy']);
 
+        // Admin News
         Route::post('news', [NewsController::class, 'store']);
         Route::put('news/{id}', [NewsController::class, 'update']);
         Route::delete('news/{id}', [NewsController::class, 'destroy']);
 
+        // Admin Knowledge Base
         Route::post('knowledge-bases', [KnowledgeBaseController::class, 'store']);
         Route::put('knowledge-bases/{id}', [KnowledgeBaseController::class, 'update']);
         Route::delete('knowledge-bases/{id}', [KnowledgeBaseController::class, 'destroy']);
@@ -76,6 +81,10 @@ Route::prefix('v1')->group(function () {
         Route::post('academic-modules', [AcademicModuleController::class, 'store']);
         Route::put('academic-modules/{id}', [AcademicModuleController::class, 'update']);
         Route::delete('academic-modules/{id}', [AcademicModuleController::class, 'destroy']);
+
+        // Admin Reports/Complaints Management
+        Route::get('admin/reports', [ReportController::class, 'index']);
+        Route::post('admin/reports/{id}/action', [ReportController::class, 'takeAction']);
     });
 
     // ── Shared routes (accessible to both student and admin roles) ────────────────
@@ -83,15 +92,15 @@ Route::prefix('v1')->group(function () {
         Route::get('/profile',              [ProfileController::class, 'show']);
         Route::put('/profile',              [ProfileController::class, 'update']);
         Route::put('/profile/password',     [ProfileController::class, 'changePassword']);
-    });
-
-    // ── Protected (requires Bearer token with student role) ──────────────────
-    Route::middleware(['auth:sanctum', 'ability:role:student'])->group(function () {
 
         // Community Posts
         Route::post('/communities',         [CommunityController::class, 'store']);
         Route::put('/communities/{id}',     [CommunityController::class, 'update']);
         Route::delete('/communities/{id}',  [CommunityController::class, 'destroy']);
+    });
+
+    // ── Protected (requires Bearer token with student role) ──────────────────
+    Route::middleware(['auth:sanctum', 'ability:role:student'])->group(function () {
 
         // Auth
         Route::post('/logout', [AuthController::class, 'logout']);
@@ -110,5 +119,15 @@ Route::prefix('v1')->group(function () {
         Route::post('/chat',                [ChatController::class, 'send']);
         Route::get('/chat/history',         [ChatController::class, 'history']);
         Route::delete('/chat/history',      [ChatController::class, 'clearHistory']);
+
+        // Peer Chat
+        Route::get('/peer-chats',                    [PeerChatController::class, 'recentChats']);
+        Route::get('/peer-chats/search',             [PeerChatController::class, 'search']);
+        Route::get('/peer-chats/{student_id}/messages', [PeerChatController::class, 'messages']);
+        Route::post('/peer-chats/{student_id}/messages', [PeerChatController::class, 'sendMessage']);
+        Route::post('/peer-chats/{student_id}/read',    [PeerChatController::class, 'markAsRead']);
+
+        // Reports
+        Route::post('/reports',                      [ReportController::class, 'store']);
     });
 });

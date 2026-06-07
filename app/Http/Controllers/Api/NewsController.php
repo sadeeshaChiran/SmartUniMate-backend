@@ -17,6 +17,13 @@ class NewsController extends Controller
     // Create news
     public function store(Request $request)
     {
+        if ($request->has('news_category_id') && !$request->has('category_id')) {
+            $request->merge(['category_id' => $request->input('news_category_id')]);
+        }
+        if (!$request->has('date')) {
+            $request->merge(['date' => now()->toDateString()]);
+        }
+
         $news = News::create($request->validate([
             'title' => 'required',
             'content' => 'required',
@@ -38,6 +45,13 @@ class NewsController extends Controller
     public function update(Request $request, $id)
     {
         $news = News::findOrFail($id);
+
+        if ($request->has('news_category_id') && !$request->has('category_id')) {
+            $request->merge(['category_id' => $request->input('news_category_id')]);
+        }
+        if (!$request->has('date')) {
+            $request->merge(['date' => $news->date ?? now()->toDateString()]);
+        }
 
         $news->update($request->validate([
             'title' => 'required',

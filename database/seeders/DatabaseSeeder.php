@@ -23,9 +23,11 @@ class DatabaseSeeder extends Seeder
         ]);
 
         $this->call([
+            AdminSeeder::class,
             NewsCategorySeeder::class,
             NewsSeeder::class,
-            KnowledgeBaseSeeder::class 
+            KnowledgeBaseSeeder::class,
+            StudentAndCommunitySeeder::class
         ]);
     }
 }
