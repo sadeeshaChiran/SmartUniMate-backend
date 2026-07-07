@@ -39,7 +39,7 @@ class AuthController extends Controller
         $token = $student->createToken('smartunimate', ['role:student'])->plainTextToken;
 
         return response()->json([
-            'message' => 'Registration successful',
+            'message' => __('messages.registration_successful'),
             'student' => $student,
             'token'   => $token,
         ], 201);
@@ -62,13 +62,13 @@ class AuthController extends Controller
 
         if (! $student || ! Hash::check($request->password, $student->password)) {
             throw ValidationException::withMessages([
-                'email' => ['The provided credentials are incorrect.'],
+                'email' => [__('messages.invalid_credentials')],
             ]);
         }
 
         if ($student->is_banned) {
             throw ValidationException::withMessages([
-                'email' => ['Your account has been banned by the Administrator.'],
+                'email' => [__('messages.account_banned')],
             ]);
         }
 
@@ -77,7 +77,7 @@ class AuthController extends Controller
         $token = $student->createToken('smartunimate', ['role:student'])->plainTextToken;
 
         return response()->json([
-            'message' => 'Login successful',
+            'message' => __('messages.login_successful'),
             'student' => $student,
             'token'   => $token,
         ]);
@@ -91,7 +91,7 @@ class AuthController extends Controller
     {
         $request->user()->currentAccessToken()->delete();
 
-        return response()->json(['message' => 'Logged out successfully']);
+        return response()->json(['message' => __('messages.logout_successful')]);
     }
 
     /**
@@ -112,7 +112,7 @@ class AuthController extends Controller
 
         if (! $student) {
             throw ValidationException::withMessages([
-                'email' => ['We could not find a student matching that email and Student ID combination.'],
+                'email' => [__('messages.student_not_found')],
             ]);
         }
 
@@ -123,6 +123,6 @@ class AuthController extends Controller
         // Revoke all tokens since the password changed
         $student->tokens()->delete();
 
-        return response()->json(['message' => 'Password reset successfully. You may now log in.']);
+        return response()->json(['message' => __('messages.password_reset_success')]);
     }
 }
