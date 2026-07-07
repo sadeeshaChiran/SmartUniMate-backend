@@ -25,7 +25,7 @@ class AdminAuthController extends Controller
 
         if (! $admin || ! Hash::check($request->password, $admin->password)) {
             throw ValidationException::withMessages([
-                'email' => ['Invalid admin credentials.'],
+                'email' => [__('messages.invalid_admin_credentials')],
             ]);
         }
 
@@ -34,7 +34,7 @@ class AdminAuthController extends Controller
         $token = $admin->createToken('smartunimate-admin', ['role:admin'])->plainTextToken;
 
         return response()->json([
-            'message' => 'Admin login successful',
+            'message' => __('messages.admin_login_successful'),
             'admin'   => $admin,
             'token'   => $token,
         ]);
@@ -48,6 +48,6 @@ class AdminAuthController extends Controller
     {
         $request->user()->currentAccessToken()->delete();
 
-        return response()->json(['message' => 'Admin logged out successfully']);
+        return response()->json(['message' => __('messages.admin_logout_successful')]);
     }
 }
