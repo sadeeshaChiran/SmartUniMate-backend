@@ -13,6 +13,13 @@ return Application::configure(basePath: dirname(__DIR__))
     )
     ->withMiddleware(function (Middleware $middleware): void {
         $middleware->statefulApi();
+        $middleware->api(prepend: [
+            \App\Http\Middleware\SetLocaleMiddleware::class,
+        ]);
+        // Apply locale middleware to web routes — append so it runs AFTER EncryptCookies
+        $middleware->web(append: [
+            \App\Http\Middleware\SetLocaleMiddleware::class,
+        ]);
         $middleware->alias([
             'abilities' => \Laravel\Sanctum\Http\Middleware\CheckAbilities::class,
             'ability' => \Laravel\Sanctum\Http\Middleware\CheckForAnyAbility::class,
