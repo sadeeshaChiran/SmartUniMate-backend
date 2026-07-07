@@ -1,5 +1,5 @@
 'use client'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { Moon, Sun, Bell, LogIn, LogOut } from 'lucide-react'
 import { useTheme } from './ThemeProvider'
 import NotificationPanel from './NotificationPanel'
@@ -8,6 +8,22 @@ export default function Header() {
   const { theme, toggle } = useTheme()
   const [loggedIn, setLoggedIn] = useState(false)
   const [notifOpen, setNotifOpen] = useState(false)
+  const [locale, setLocale] = useState('en')
+
+  useEffect(() => {
+    const storedLocale = document.cookie
+      .split('; ')
+      .find(row => row.startsWith('locale='))
+      ?.split('=')[1] || localStorage.getItem('locale') || 'en'
+    setLocale(storedLocale)
+  }, [])
+
+  const handleLocaleChange = (newLocale: string) => {
+    document.cookie = `locale=${newLocale}; path=/; max-age=31536000`
+    localStorage.setItem('locale', newLocale)
+    setLocale(newLocale)
+    window.location.reload()
+  }
 
   return (
     <>
@@ -18,6 +34,18 @@ export default function Header() {
         </span>
 
         <div className="flex items-center gap-2">
+          <select
+            value={locale}
+            onChange={(e) => handleLocaleChange(e.target.value)}
+            className="text-xs bg-stone-50 dark:bg-stone-800 border border-stone-200 dark:border-stone-700
+              rounded-lg px-2 py-1.5 focus:outline-none focus:border-[#800000]
+              text-stone-700 dark:text-stone-300 font-semibold cursor-pointer transition mr-1"
+          >
+            <option value="en">English</option>
+            <option value="ta">தமிழ்</option>
+            <option value="si">සිංහල</option>
+          </select>
+
           <button onClick={toggle}
             className="w-9 h-9 rounded-lg flex items-center justify-center
               text-stone-500 hover:bg-stone-100 dark:hover:bg-stone-800 transition">
