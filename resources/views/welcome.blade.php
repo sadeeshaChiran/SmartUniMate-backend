@@ -76,6 +76,7 @@
             color: var(--text);
             transition: background 0.3s, color 0.3s;
             min-height: 100vh;
+            overflow-x: hidden;
         }
 
         /* ── TOPBAR ── */
@@ -151,7 +152,7 @@
         .nav-item i { width: 16px; text-align: center; font-size: 14px; }
 
         /* ── MAIN ── */
-        main { flex: 1; padding: 32px; max-width: 960px; }
+        main { flex: 1; padding: 32px; max-width: 1120px; width: 100%; }
         .section { display: none; animation: up 0.25s ease; }
         .section.active { display: block; }
         @keyframes up { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
@@ -434,15 +435,131 @@
             grid-template-columns: repeat(4, 1fr);
             gap: 16px;
         }
+        .menu-toggle { display: none; }
+
+        @media (max-width: 992px) {
+            header { padding: 0 16px; }
+            .menu-toggle { display: inline-flex; }
+            aside {
+                position: fixed;
+                left: 0;
+                top: 60px;
+                bottom: 0;
+                width: min(82vw, 280px);
+                z-index: 1000;
+                transform: translateX(-100%);
+                transition: transform 0.25s ease;
+                box-shadow: 0 10px 30px rgba(0,0,0,0.16);
+            }
+            body.mobile-nav-open::before {
+                content: '';
+                position: fixed;
+                inset: 0;
+                background: rgba(0,0,0,0.35);
+                z-index: 900;
+            }
+            body.mobile-nav-open aside {
+                transform: translateX(0);
+            }
+            main {
+                padding: 20px 16px;
+                max-width: 100%;
+            }
+            .notif-panel { width: min(100vw, 360px); }
+        }
+
         @media (max-width: 768px) {
-            .grid-4 {
-                grid-template-columns: repeat(2, 1fr);
-            }
-            .grid-3 {
-                grid-template-columns: 1fr;
-            }
+            .topbar-right .auth-btn span { display: none; }
+            .topbar-right .auth-btn { padding: 0 12px; }
+            .logo { font-size: 17px; }
+            .hero { padding: 32px 20px; }
+            .hero h1 { font-size: 30px; }
+            .quick-search { flex-direction: column; }
+            .grid-4,
+            .grid-3,
             .grid-2 {
                 grid-template-columns: 1fr;
+            }
+            .card,
+            .stat-card {
+                padding: 16px;
+            }
+            .setting-row {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 8px;
+            }
+            .profile-hero,
+            .profile-hero > div {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            .chat-input-row,
+            .chat-header {
+                flex-wrap: wrap;
+            }
+            .chat-wrap {
+                height: auto;
+                min-height: 540px;
+            }
+            #peerChatWrap {
+                flex-direction: column !important;
+                height: auto !important;
+                min-height: 520px;
+            }
+            #peerChatWrap > div:first-child {
+                width: 100%;
+                border-right: none;
+                border-bottom: 1px solid var(--border);
+                max-height: 260px;
+            }
+            #peerChatWrap > div:last-child {
+                min-height: 360px;
+            }
+            .module-row {
+                grid-template-columns: 1fr 70px 70px 60px;
+                font-size: 12px;
+            }
+            .notif-panel {
+                width: 100%;
+                top: 60px;
+                height: calc(100vh - 60px);
+            }
+            .timetable-grid {
+                min-width: 560px;
+            }
+            .timetable-grid-wrapper {
+                overflow-x: auto;
+            }
+            .modal-card,
+            #modalOverlay > div,
+            #authModalOverlay > div,
+            #reportModalOverlay > div,
+            #studentWarningDetailModalOverlay > div,
+            #adminWarnModalOverlay > div {
+                width: min(92vw, 440px);
+                padding: 20px;
+            }
+        }
+
+        @media (max-width: 560px) {
+            header { height: 56px; }
+            aside { top: 56px; height: calc(100vh - 56px); }
+            .logo { font-size: 16px; }
+            .nav-item { padding: 10px 12px; font-size: 13px; }
+            .hero h1 { font-size: 26px; }
+            .hero p { font-size: 15px; }
+            .btn { width: 100%; justify-content: center; }
+            .quick-search .btn { width: auto; }
+            .grid-4,
+            .grid-3,
+            .grid-2 {
+                gap: 12px;
+            }
+            .stat-num { font-size: 24px; }
+            .module-row {
+                grid-template-columns: 1fr;
+                gap: 4px;
             }
         }
         @keyframes pulse {
@@ -467,12 +584,13 @@
 <header>
     <div class="logo" onclick="nav('home')">◈ Smart UniMate</div>
     <div class="topbar-right">
+        <button class="icon-btn menu-toggle" onclick="toggleMobileNav()" title="Open menu"><i class="fa-solid fa-bars"></i></button>
         <button class="icon-btn" onclick="toggleTheme()" id="themeBtn" title="Toggle theme"><i class="fa-solid fa-moon"></i></button>
         <button class="icon-btn" onclick="toggleNotifPanel()" title="Notifications">
             <i class="fa-solid fa-bell"></i>
             <span class="notif-badge" id="notifBadge"></span>
         </button>
-        <button class="auth-btn" id="authBtn" onclick="toggleAuth()"><i class="fa-brands fa-microsoft"></i> Sign In</button>
+        <button class="auth-btn" id="authBtn" onclick="toggleAuth()"><i class="fa-brands fa-microsoft"></i><span> Sign In</span></button>
     </div>
 </header>
 
@@ -1633,14 +1751,35 @@ let gpaModules = JSON.parse(localStorage.getItem('susl_gpa')) || [
 const GRADE_POINTS = { 'A+':4.0,'A':4.0,'A-':3.7,'B+':3.3,'B':3.0,'B-':2.7,'C+':2.3,'C':2.0,'C-':1.7,'D+':1.3,'D':1.0,'F':0.0 };
 
 // ── NAVIGATION ──
+function toggleMobileNav() {
+    document.body.classList.toggle('mobile-nav-open');
+}
+function closeMobileNav() {
+    document.body.classList.remove('mobile-nav-open');
+}
 function nav(id) {
     document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
     document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
     document.getElementById(id).classList.add('active');
     const ni = document.getElementById('nav-'+id);
     if(ni) ni.classList.add('active');
+    closeMobileNav();
     if(notifPanelOpen) toggleNotifPanel();
 }
+
+window.addEventListener('resize', function () {
+    if (window.innerWidth > 992) {
+        closeMobileNav();
+    }
+});
+
+document.addEventListener('click', function (event) {
+    const navOpen = document.body.classList.contains('mobile-nav-open');
+    const clickedInsideNav = event.target.closest('aside') || event.target.closest('.menu-toggle');
+    if (navOpen && !clickedInsideNav) {
+        closeMobileNav();
+    }
+});
 
 // ── THEME ──
 function toggleTheme() {
