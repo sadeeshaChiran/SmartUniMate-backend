@@ -343,6 +343,8 @@
         .post-meta {
             display: flex; justify-content: space-between;
             align-items: center; margin-bottom: 8px;
+            gap: 8px;
+            flex-wrap: wrap;
         }
         .author-chip {
             display: flex; align-items: center; gap: 8px; font-size: 13px; font-weight: 600;
@@ -373,6 +375,7 @@
         /* ── PROFILE ── */
         .profile-hero {
             display: flex; align-items: center; gap: 20px;
+            flex-wrap: wrap;
         }
         .profile-avatar {
             width: 80px; height: 80px; border-radius: 50%;
@@ -473,6 +476,17 @@
             .topbar-right .auth-btn { padding: 0 12px; }
             .logo { font-size: 17px; }
             .hero { padding: 32px 20px; }
+            .post-meta {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            .post-actions {
+                flex-wrap: wrap;
+            }
+            .profile-hero {
+                flex-direction: column;
+                align-items: flex-start;
+            }
             .hero h1 { font-size: 30px; }
             .quick-search { flex-direction: column; }
             .grid-4,
@@ -991,9 +1005,9 @@
         <!-- LEFT COLUMN: Grid & Upload -->
         <div style="display:flex;flex-direction:column;gap:24px;">
             <div class="card" style="overflow-x:auto;">
-                <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;">
+                <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;gap:12px;flex-wrap:wrap;">
                     <h3 class="section-title" style="margin:0;">Weekly Schedule</h3>
-                    <div style="display:flex;gap:8px;">
+                    <div style="display:flex;gap:8px;flex-wrap:wrap;">
                         <button class="btn btn-outline" style="font-size:12px;" onclick="openAddClass()"><i class="fa-solid fa-plus"></i> Add Class</button>
                     </div>
                 </div>
@@ -1016,9 +1030,9 @@
         <div style="display:flex;flex-direction:column;gap:24px;">
             <!-- INTERACTIVE CALENDAR CARD -->
             <div class="card">
-                <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;">
+                <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;gap:8px;flex-wrap:wrap;">
                     <h3 class="section-title" style="margin:0;" id="calMonthTitle">May 2026</h3>
-                    <div style="display:flex;gap:4px;">
+                    <div style="display:flex;gap:4px;flex-wrap:wrap;">
                         <button class="icon-btn" onclick="prevMonth()" style="padding:4px 8px;"><i class="fa-solid fa-chevron-left"></i></button>
                         <button class="icon-btn" onclick="nextMonth()" style="padding:4px 8px;"><i class="fa-solid fa-chevron-right"></i></button>
                     </div>
@@ -1077,7 +1091,7 @@
             <img id="postImagePreview" src="" alt="preview" style="max-height:150px;border-radius:8px;">
             <button class="icon-btn" onclick="removePostImage()" style="position:absolute;top:4px;right:4px;background:rgba(0,0,0,0.6);color:#fff;border-radius:50%;width:24px;height:24px;font-size:12px;"><i class="fa-solid fa-xmark"></i></button>
         </div>
-        <div style="display:flex;gap:8px;margin-top:8px;align-items:center;">
+        <div style="display:flex;gap:8px;margin-top:8px;align-items:center;flex-wrap:wrap;">
             <select id="postCategory" style="width:auto;margin:0;font-size:13px;">
                 <option>Boarding & Accommodation</option>
                 <option>Academic Help</option>
@@ -1336,8 +1350,8 @@
     <div id="profView-profile" class="prof-view">
 
     <!-- Summary Card -->
-    <div class="card" style="display:flex;justify-content:space-between;align-items:center;padding:32px;">
-        <div style="display:flex;gap:24px;align-items:center;">
+    <div class="card" style="display:flex;justify-content:space-between;align-items:center;padding:32px;flex-wrap:wrap;gap:20px;">
+        <div style="display:flex;gap:24px;align-items:center;flex-wrap:wrap;">
             <div style="width:80px;height:80px;border-radius:50%;background:#ffe4e1;display:flex;align-items:center;justify-content:center;font-size:40px;" id="profileAvatarBig">
                 👨‍🎓
             </div>
@@ -1348,7 +1362,7 @@
                 <button class="btn btn-primary" style="background:var(--danger);border-color:var(--danger);font-size:12px;padding:6px 16px;border-radius:6px;" onclick="toggleProfileEdit()" id="btnProfileEdit"><i class="fa-solid fa-pen"></i> Edit</button>
             </div>
         </div>
-        <div style="display:flex;gap:32px;text-align:center;">
+        <div style="display:flex;gap:32px;text-align:center;flex-wrap:wrap;justify-content:center;">
             <div><div style="font-size:24px;font-weight:700;color:var(--danger);" id="statPosts">0</div><div style="font-size:10px;font-weight:700;color:var(--text-muted);letter-spacing:1px;">POSTS</div></div>
             <div><div style="font-size:24px;font-weight:700;color:var(--danger);" id="statQuestions">0</div><div style="font-size:10px;font-weight:700;color:var(--text-muted);letter-spacing:1px;">QUESTIONS</div></div>
             <div><div style="font-size:24px;font-weight:700;color:var(--danger);" id="statComments">0</div><div style="font-size:10px;font-weight:700;color:var(--text-muted);letter-spacing:1px;">COMMENTS</div></div>
