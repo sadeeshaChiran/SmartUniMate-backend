@@ -142,6 +142,8 @@ class ReportController extends Controller
                 'is_banned' => true,
             ]);
 
+            $targetStudent->tokens()->delete();
+
             $report->update([
                 'status'       => 'resolved',
                 'action_taken' => 'banned',
