@@ -1883,6 +1883,11 @@ function updateAdminProfileUI(admin) {
             document.getElementById('adminEmailBig').textContent = admin.email || 'admin@mate.com';
             document.getElementById('adminProfName').value = admin.name || 'System Administrator';
             document.getElementById('adminProfEmail').value = admin.email || 'admin@mate.com';
+            if (admin.created_at) {
+                document.getElementById('adminMemberSince').value = new Date(admin.created_at).toLocaleDateString();
+            } else {
+                document.getElementById('adminMemberSince').value = 'N/A';
+            }
         // Update stats
         document.getElementById('adminStatPosts').textContent = posts.length;
         document.getElementById('adminStatNews').textContent = allNews.length;
